@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+    <meta charset="utf-8">
+
+    
+
+    <!-- 渲染优化 -->
+    <meta name="renderer" content="webkit">
+    <meta name="force-rendering" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta name="HandheldFriendly" content="True" >
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+    <!--icon-->
+
+    
+    
+    
+    
+    
+
+
+    <!-- meta -->
+
+
+<title>Type traits,SFINAE和编译时反射 | Welcome to Phi-C&#39;s Blog</title>
+
+
+
+
+
+    <!-- OpenGraph -->
+ 
+    <meta name="description" content="C++提供了一小部分runtime introspection的能力(RTTI: Run-Time Tyep Identification)  typeid std::type_info …  但是这些能力非常有限，不支持reflection ，且会带来运行时开销。所以本篇笔记重点介绍一下如何用在C++中实现compile-time introspection。 1 函数调用背后发生了什么1.1">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Type traits,SFINAE和编译时反射">
+<meta property="og:url" content="http://example.com/2023/03/28/Type-traits-SFINAE%E5%92%8C%E7%BC%96%E8%AF%91%E6%97%B6%E5%8F%8D%E5%B0%84/index.html">
+<meta property="og:site_name" content="Welcome to Phi-C&#39;s Blog">
+<meta property="og:description" content="C++提供了一小部分runtime introspection的能力(RTTI: Run-Time Tyep Identification)  typeid std::type_info …  但是这些能力非常有限，不支持reflection ，且会带来运行时开销。所以本篇笔记重点介绍一下如何用在C++中实现compile-time introspection。 1 函数调用背后发生了什么1.1">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://github.com/Phi-C/ImageBed/blob/master/uPic/n2tjjz.jpg">
+<meta property="og:image" content="https://github.com/Phi-C/ImageBed/blob/master/uPic/Ug6V1g.jpg">
+<meta property="og:image" content="https://github.com/Phi-C/ImageBed/blob/master/uPic/VBCtgi.jpg">
+<meta property="og:image" content="https://github.com/Phi-C/ImageBed/blob/master/uPic/PBIGEx.jpg">
+<meta property="article:published_time" content="2023-03-28T15:04:03.000Z">
+<meta property="article:modified_time" content="2023-03-29T12:30:13.588Z">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://github.com/Phi-C/ImageBed/blob/master/uPic/n2tjjz.jpg">
+
+
+    
+<link rel="stylesheet" href="/css/style/main.css">
+ 
+
+    
+    
+        <link rel="stylesheet" id="hl-default-theme" href="/css/highlight/default.css" media="none" onload="this.media='all'">
+        
+    
+
+    
+    
+
+    
+
+     
+
+    <!-- custom head -->
+
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+    <body>
+        <div id="app" tabindex="-1">
+            <header class="header">
+    <div class="header__left">
+        <a href="/" class="button">
+            <span class="logo__text">XJ Chen&#39;s Blog</span>
+        </a>
+    </div>
+    <div class="header__right">
+        
+            <div class="navbar__menus">
+                
+                    <a href="/" class="navbar-menu button">首页</a>
+                
+                    <a href="/tags/" class="navbar-menu button">标签</a>
+                
+                    <a href="/archives/" class="navbar-menu button">归档</a>
+                
+                    <a href="/friends/" class="navbar-menu button">友链</a>
+                
+                    <a href="/page/" class="navbar-menu button">Page</a>
+                
+            </div>
+        
+        
+        
+
+        
+        
+
+        
+            <a class="dropdown-icon button" id="btn-dropdown" tabindex="0"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" width='24' height='24' fill="none" stroke="currentColor" stroke-width="0.7" stroke-linecap="round" stroke-linejoin="round"><path fill="currentColor" d="M3.314,4.8h13.372c0.41,0,0.743-0.333,0.743-0.743c0-0.41-0.333-0.743-0.743-0.743H3.314c-0.41,0-0.743,0.333-0.743,0.743C2.571,4.467,2.904,4.8,3.314,4.8z M16.686,15.2H3.314c-0.41,0-0.743,0.333-0.743,0.743s0.333,0.743,0.743,0.743h13.372c0.41,0,0.743-0.333,0.743-0.743S17.096,15.2,16.686,15.2z M16.686,9.257H3.314c-0.41,0-0.743,0.333-0.743,0.743s0.333,0.743,0.743,0.743h13.372c0.41,0,0.743-0.333,0.743-0.743S17.096,9.257,16.686,9.257z"></path></svg></a>
+            <div class="dropdown-menus" id="dropdown-menus">
+                
+                    <a href="/" class="dropdown-menu button">首页</a>
+                
+                    <a href="/tags/" class="dropdown-menu button">标签</a>
+                
+                    <a href="/archives/" class="dropdown-menu button">归档</a>
+                
+                    <a href="/friends/" class="dropdown-menu button">友链</a>
+                
+                    <a href="/page/" class="dropdown-menu button">Page</a>
+                
+            </div>
+        
+    </div>
+</header>
+
+
+            <main class="main">
+    
+
+<div class="post-title">
+    <h1 class="post-title__text">
+        Type traits,SFINAE和编译时反射
+    </h1>
+    <div class="post-title__meta">
+        <a href="/archives/2023/03/" class="post-meta__date button">2023-03-28</a>
+        
+ 
+        
+    
+    
+
+
+ 
+
+ 
+    </div>
+</div>
+
+
+
+<article class="post content-card">
+    <div class="post__header"></div>
+    <div class="post__content">
+        <p>C++提供了一小部分<code>runtime introspection</code>的能力(RTTI: Run-Time Tyep Identification)</p>
+<ul>
+<li><code>typeid</code></li>
+<li><code>std::type_info</code></li>
+<li>…</li>
+</ul>
+<p>但是这些能力非常有限，不支持reflection ，且会带来运行时开销。所以本篇笔记重点介绍一下如何用在C++中实现compile-time introspection。</p>
+<h1 id="1-函数调用背后发生了什么"><a href="#1-函数调用背后发生了什么" class="headerlink" title="1 函数调用背后发生了什么"></a>1 函数调用背后发生了什么</h1><h2 id="1-1-一般函数调用过程"><a href="#1-1-一般函数调用过程" class="headerlink" title="1.1 一般函数调用过程"></a>1.1 一般函数调用过程</h2><p><img src="https://github.com/Phi-C/ImageBed/blob/master/uPic/n2tjjz.jpg"></p>
+<h2 id="1-2-函数模板实例调用过程"><a href="#1-2-函数模板实例调用过程" class="headerlink" title="1.2 函数模板实例调用过程"></a>1.2 函数模板实例调用过程</h2><p><img src="https://github.com/Phi-C/ImageBed/blob/master/uPic/Ug6V1g.jpg"></p>
+<h2 id="1-3-SFINAE"><a href="#1-3-SFINAE" class="headerlink" title="1.3 SFINAE"></a>1.3 SFINAE</h2><p><img src="https://github.com/Phi-C/ImageBed/blob/master/uPic/VBCtgi.jpg"></p>
+<blockquote>
+<p>(Type) SFINAE(Substitution Failure Is Not An Error) let’s write potentially invalid template code without throwing an error;<br>Of course, if there is no alternative candidate, this will be an error!</p>
+</blockquote>
+<ul>
+<li>name lookup: 名字查找</li>
+<li>overload resolution：重载决议</li>
+</ul>
+<h2 id="1-4-重载决议的规则"><a href="#1-4-重载决议的规则" class="headerlink" title="1.4 重载决议的规则"></a>1.4 重载决议的规则</h2><p><img src="https://github.com/Phi-C/ImageBed/blob/master/uPic/PBIGEx.jpg"></p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">foo</span><span class="params">(<span class="type">unsigned</span> <span class="type">int</span> i)</span></span>;    <span class="comment">// (1)</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">template</span>&lt;<span class="keyword">class</span> T&gt;</span></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">foo</span><span class="params">(<span class="type">const</span> T&amp; t)</span></span>;        <span class="comment">// (2)</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">foo</span>(<span class="number">42</span>);</span><br></pre></td></tr></table></figure>
+<p>42是<code>int</code>类型，如果匹配(1)，需要做<code>type conversion</code>，所以这里会和(2)匹配上</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">foo</span><span class="params">(<span class="type">unsigned</span> <span class="type">int</span> i)</span></span>;    <span class="comment">// (1)</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">template</span>&lt;<span class="keyword">class</span> T&gt;</span></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">foo</span><span class="params">(<span class="type">const</span> T t, <span class="keyword">typename</span> T::ElemTy* = <span class="number">0</span>)</span></span>;        <span class="comment">// (2)</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">foo</span>(<span class="number">42</span>);</span><br></pre></td></tr></table></figure>
+<p>和(2)匹配会出现<code>substitution failure</code>，这里和(1)匹配上.\</p>
+<p>SFINAE的一个主要应用场景：<code>introspection</code> 。C++并不擅长在运行时检查对象的类型或属性，在这方面C++提供的最佳能力就是<code>RTTI</code>. </p>
+<h1 id="2-编译时自省"><a href="#2-编译时自省" class="headerlink" title="2 编译时自省"></a>2 编译时自省</h1><h2 id="2-1-C-98的老式实现方式"><a href="#2-1-C-98的老式实现方式" class="headerlink" title="2.1 C++98的老式实现方式"></a>2.1 C++98的老式实现方式</h2><ul>
+<li>根据重载决议的规则，如果存在函数模板和<strong>可变参函数</strong>，优先考虑函数模板<br>可变参函数(<code>variadic function</code>)的概念，详细描述见cppreference: variadic functions。举个例子，像C中的<code>printf(const char* format...)</code>就是一个典型的可变参函数。</li>
+<li><code>SFINAE</code></li>
+<li><code>sizeof(X)</code>在<strong>编译时</strong>就能够获得<code>X</code>的字节数<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">class</span> <span class="title class_">T</span>&gt;</span><br><span class="line"><span class="keyword">struct</span> <span class="title class_">has_type_x</span> &#123;</span><br><span class="line">    <span class="comment">// Discriminateive return types</span></span><br><span class="line">    <span class="keyword">typedef</span> <span class="type">char</span> yes[<span class="number">1</span>];</span><br><span class="line">    <span class="keyword">typedef</span> <span class="type">char</span> no[<span class="number">2</span>];</span><br><span class="line"></span><br><span class="line">    <span class="keyword">template</span> &lt;<span class="keyword">class</span> <span class="title class_">C</span>&gt;</span><br><span class="line">    <span class="function"><span class="type">static</span> yes&amp; <span class="title">test</span><span class="params">(<span class="keyword">typename</span> C::x* = <span class="number">0</span>)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Sink if no member called x in C</span></span><br><span class="line">    <span class="keyword">template</span> &lt;<span class="keyword">class</span> <span class="title class_">C</span>&gt;</span><br><span class="line">    <span class="function"><span class="type">static</span> no&amp; <span class="title">test</span><span class="params">(...)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">enum</span> &#123; value = <span class="built_in">sizeof</span>(<span class="built_in">test</span>&lt;T&gt;(<span class="number">0</span>)) == <span class="built_in">sizeof</span>(yes) &#125;;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">struct</span> <span class="title class_">A</span> &#123;</span><br><span class="line">    <span class="keyword">typedef</span> <span class="type">int</span> x;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    A a;</span><br><span class="line">    std::cout &lt;&lt; has_type_x&lt;A&gt;::value &lt;&lt; std::endl;          <span class="comment">// 1</span></span><br><span class="line">    std::cout &lt;&lt; has_type_x&lt;<span class="type">int</span>&gt;::value &lt;&lt; std::endl;        <span class="comment">// 0</span></span><br><span class="line">    <span class="type">char</span> test[has_type_x&lt;A&gt;::value * <span class="number">4</span> + <span class="number">40</span>];</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+讲解样例：这里以将对象进行序列化(serialize)为例。有的对象内部定义了<code>serialize</code>方法，那么可以调用该方法进行序列化；有的对象比如<code>int</code>、<code>float</code>等对象没有<code>serialize</code>方法，可以通过一个公共的函数将其序列化(为了简单和便于理解，这里假设这个共用的函数为<code>to_string</code>)。<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">class</span> <span class="title class_">T</span>&gt;</span><br><span class="line"><span class="keyword">struct</span> <span class="title class_">has_serialize</span> &#123;</span><br><span class="line">    <span class="keyword">typedef</span> <span class="type">char</span> yes[<span class="number">1</span>];</span><br><span class="line">    <span class="keyword">typedef</span> <span class="type">char</span> no[<span class="number">2</span>];</span><br><span class="line"></span><br><span class="line">    <span class="comment">// This helper struct permits us to check that serialize is truly a method.</span></span><br><span class="line">    <span class="comment">// The second argument must be of the type of the first.</span></span><br><span class="line">    <span class="comment">// For instance:</span></span><br><span class="line">    <span class="comment">// really_has&lt;int, 10&gt; would be substituted by reallyHas&lt;int, int 10&gt; and works!</span></span><br><span class="line">    <span class="comment">// really_has&lt;int, &amp;C::serialize&gt; would be substituted by reallyHas&lt;int, int &amp;C::serialize&gt; and fail!</span></span><br><span class="line">    <span class="comment">// Note: It only works with integral constants and pointers (so function pointers work).</span></span><br><span class="line">    <span class="comment">// In our case we check that &amp;C::serialize has the same signature as the first argument!</span></span><br><span class="line">    <span class="comment">// really_has&lt;std::string (C::*)(), &amp;C::serialize&gt; should be substituted by </span></span><br><span class="line">    <span class="comment">// really_has&lt;std::string (C::*)(), std::string (C::*)() &amp;C::serialize&gt; and work!</span></span><br><span class="line">    <span class="keyword">template</span> &lt;<span class="keyword">typename</span> U, U u&gt; <span class="keyword">struct</span> <span class="title class_">really_has</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Two overloads for yes: one for the signature of a normal method, one is for the signature of a const method.</span></span><br><span class="line">    <span class="comment">// std::string (C::*)() is function pointer declaration.</span></span><br><span class="line">    <span class="keyword">template</span> &lt;<span class="keyword">typename</span> C&gt; <span class="function"><span class="type">static</span> yes&amp; <span class="title">test</span><span class="params">(really_has&lt;std::string (C::*)(), &amp;C::serialize&gt;*)</span> </span>&#123; &#125;</span><br><span class="line">    <span class="keyword">template</span> &lt;<span class="keyword">typename</span> C&gt; <span class="function"><span class="type">static</span> yes&amp; <span class="title">test</span><span class="params">(really_has&lt;std::string (C::*)() <span class="type">const</span>, &amp;C::serialize&gt;*)</span> </span>&#123; &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Fallback for types without serialize(), the famous C++ sink-hole.</span></span><br><span class="line">    <span class="comment">// Note that sink-hole must be templated too as we are testing test&lt;T&gt;(0).</span></span><br><span class="line">    <span class="keyword">template</span> &lt;<span class="keyword">typename</span>&gt; <span class="function"><span class="type">static</span> no&amp; <span class="title">test</span><span class="params">(...)</span> </span>&#123; <span class="comment">/* dark matter */</span> &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// The constant used as a return value for the test.</span></span><br><span class="line">    <span class="comment">// The test is actually done here, thanks to the sizeof compile-time evaluation.</span></span><br><span class="line">    <span class="type">static</span> <span class="type">const</span> <span class="type">bool</span> value = <span class="built_in">sizeof</span>(<span class="built_in">test</span>&lt;T&gt;(<span class="number">0</span>)) == <span class="built_in">sizeof</span>(yes);</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure></li>
+</ul>
+<p>Question: 通过has_serialize 这个类模板，我们可以判断某个类型T 是否有serialize 这个函数，那么如何借助has_serialize 去进行序列化呢？<br>不work的serialize ：</p>
+<p>对于int 而言，虽然在运行时不会走第一个分支，但是编译器在检查的时候，仍然会考虑第一个分支。这就要求obj 必须有serialize 方法以及对应的to_string 重载。<br>可以work的serialize ：</p>
+<p><code>std::enable_if</code>介绍<br>阅读cppreference: std::enable_if ，std::enalbe_if 可能的实现方式为</p>
+<p>表达式typename std::enable_if&lt;true, T&gt;::type 、std:enable_if_t&lt;true, T&gt; 、typename std::enable_if&lt;false, T&gt;::type 、std::enable_if_t&lt;false, T&gt; 的含义</p>
+<h2 id="2-1-Modern-C-实现方式"><a href="#2-1-Modern-C-实现方式" class="headerlink" title="2.1 Modern C++实现方式"></a>2.1 Modern C++实现方式</h2><h3 id="2-1-1-使用declval、decltype（利用Expression-SFINAE）和constexpr实现"><a href="#2-1-1-使用declval、decltype（利用Expression-SFINAE）和constexpr实现" class="headerlink" title="2.1.1 使用declval、decltype（利用Expression SFINAE）和constexpr实现"></a>2.1.1 使用declval、decltype（利用Expression SFINAE）和constexpr实现</h3><ul>
+<li>std::declval<br>cppreference对std::declval 的描述如下：<br>Converts any type T to a reference type, making it possible to use member functions in the operand of the decltype specifier without the need to go through constructors.</li>
+</ul>
+<p>std::declval is commonly used in templates where acceptable template parameters may have no constructor in common, but have the same member function whose return type is needed.</p>
+<p>Note that std::declval can only be used in unevaluated contexts and is not required to be defined; it is an error to evaluate an expression that contains this function. Formally, the program is ill-formed if this function is odr-used.<br>struct NonDefault {<br> NonDefault() &#x3D; delete;<br> int foo() const {return 1;}<br>};<br>decltype(std::declval<NonDefault>().foo()) n1 &#x3D; 42; &#x2F;&#x2F; int x &#x3D; 42;<br>&#x2F;&#x2F;  decltype(NonDefault().foo()) n2 &#x3D; n1;               &#x2F;&#x2F; error: no default constructor<br>decltype(std::declval<NonDefault>().foo()) n2 &#x3D; n1; &#x2F;&#x2F; type of n2 is int<br>decltype(std::declval<NonDefault>().foo(), bool()) n3 &#x3D; 1; &#x2F;&#x2F; bool n3 &#x3D; 1;</p>
+<ul>
+<li>std::decltype<br>decltype可以进行类型推断，具体细节可以阅读cppreference以及《Modern Effective C++》。这里解释一下上面decltype(std::declval<NonDefault>().foo(), bool()) n3 &#x3D; 1; 这条语句。这里的decltype并不是有两个参数，应该把括号里的看成一个逗号分隔的表达式。<br>decltype does not take two arguments. Simply, it can can have an expression as its argument, and the comma operator is one way of creating expressions.</li>
+</ul>
+<blockquote>
+<p>The C++ comma operator <code>,</code> can create a chain of multiple expressions. In decltype, all the expressions will be evaluated, but only the last expression will be considered for the type.</p>
+</blockquote>
+<h3 id="2-1-2-使用std-true-type和std-false-type实现"><a href="#2-1-2-使用std-true-type和std-false-type实现" class="headerlink" title="2.1.2 使用std::true_type和std::false_type实现"></a>2.1.2 使用std::true_type和std::false_type实现</h3><p>• std::true_type and std::false_type: types that encapsulate a constexpr boolean “true” and a constexpr boolean “false”</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T, T v&gt;</span><br><span class="line"><span class="keyword">struct</span> <span class="title class_">integral_constant</span> &#123;</span><br><span class="line">    <span class="type">static</span> <span class="keyword">constexpr</span> T value = v;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 通过全特化，得到std::true_type和std::false_type</span></span><br><span class="line"><span class="keyword">using</span> true_type = integral_constant&lt;<span class="type">bool</span>, <span class="literal">true</span>&gt;;</span><br><span class="line"><span class="keyword">using</span> false_type = integral_constant&lt;<span class="type">bool</span>, <span class="literal">false</span>&gt;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 利用得到的std::true_type和std::false_type，可以检查某个类型是否为引用</span></span><br><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</span><br><span class="line"><span class="keyword">struct</span> <span class="title class_">is_reference</span> : false_type &#123;&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 这里对is_reference这个类模板进行了偏特化</span></span><br><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</span><br><span class="line"><span class="keyword">struct</span> <span class="title class_">is_reference</span>&lt;T&amp;&gt; : true_type &#123;&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</span><br><span class="line"><span class="keyword">struct</span> <span class="title class_">is_reference</span>&lt;T&amp;&amp;&gt; : true_type &#123;&#125;;</span><br></pre></td></tr></table></figure>
+<ul>
+<li><p>关于type traits</p>
+<ul>
+<li>大多数type traits都是self-explanatory的。比如is_integral<T> 、is_const<T> 、is_member_function_pointer<T> 等</li>
+<li>也有少部分type traits会复杂一些。比如conditional&lt;B, T, F&gt; 、has_unique_object_representations<T> 等</li>
+<li>使用type traits，也可以选修改类型（在编译时）。比如make_signed<T> 、add_const<T> 、add_pointer<T> 等。</li>
+</ul>
+<p>关于各种type taits，可以在cppconference中阅读<a target="_blank" rel="noopener" href="https://en.cppreference.com/w/cpp/header/type_traits">相关词条</a>。</p>
+</li>
+</ul>
+<h1 id="3-其它"><a href="#3-其它" class="headerlink" title="3 其它"></a>3 其它</h1><ul>
+<li><code>tag dispatch</code>: 基本思想就是创建<code>“tags”(empty structs)</code>来引导重载决议。比如可以使用<code>std::true_type</code>和<code>std::false_type</code>作为tags。比如博客<a target="_blank" rel="noopener" href="https://blog.csdn.net/pongba/article/details/83828">《boost源码剖析之：泛型编程精灵type_traits(rev#2)》</a> 中分派一节介绍的其实就是<code>tag dispatch</code>(标签分派)。</li>
+</ul>
+<h1 id="4-参考资料"><a href="#4-参考资料" class="headerlink" title="4 参考资料"></a>4 参考资料</h1><p>1 <a target="_blank" rel="noopener" href="https://wiki.tum.de/download/attachments/93291100/Below%20-%20Type%20Traits%20SFINAE%20and%20Compile-Time%20Reflection%20in%20C%2B%2B14.pdf?version=1&modificationDate=1532345215540&api=v2">《Type Traits, SFINAE and Compile-Time Reflection》</a><br>2 <a target="_blank" rel="noopener" href="https://www.youtube.com/watch?v=YgbTBqS-bHg">《Video: Compile time type introspection using SFINAE》</a></p>
+
+    </div>
+     
+    <div class="post-footer__meta"><p>updated at 2023-03-29</p></div> 
+    <div class="post-entry__tags"></div> 
+</article>
+
+
+    <div class="nav">
+        <div class="nav__prev">
+            
+        </div>
+        <div class="nav__next">
+            
+                <a href="/2023/03/26/hello-world/" class="nav__link">
+                    <div>
+                        <div class="nav__label">
+                            Next Post
+                        </div>
+                        <div class="nav__title">
+                            Hello World
+                        </div>
+                    </div>
+                    <div>
+                        <svg viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" width="24" height="24"><path d="M434.944 790.624l-45.248-45.248L623.04 512l-233.376-233.376 45.248-45.248L713.568 512z" fill="#808080"></path></svg>
+                    </div>
+                </a>
+            
+        </div>
+    </div>
+
+
+
+
+
+</main>
+
+            <footer class="footer">
+    
+    
+
+
+    
+     
+ 
+
+ 
+    
+        
+        <p class="footer-copyright">
+            Copyright © 2023 <a href="/">Welcome to Phi-C&#39;s Blog</a>
+        </p>
+    
+    
+    <p>Powered by <a href="https://hexo.io" target="_blank">Hexo</a> | Theme - <a href="https://github.com/ChrAlpha/hexo-theme-cards" target="_blank">Cards</a></p>
+</footer>
+
+        </div>
+         
+
+ 
+
+ 
+
+ 
+
+ 
+
+
+
+ 
+
+
+
+ 
+
+
+    
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+
+
+
+    </body>
+</html>
