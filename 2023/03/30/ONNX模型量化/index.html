@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+    <meta charset="utf-8">
+
+    
+
+    <!-- 渲染优化 -->
+    <meta name="renderer" content="webkit">
+    <meta name="force-rendering" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta name="HandheldFriendly" content="True" >
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+    <!--icon-->
+
+    
+    
+    
+    
+    
+
+
+    <!-- meta -->
+
+
+<title>ONNX模型量化 | Welcome to Phi-C&#39;s Blog</title>
+
+
+    <meta name="keywords" content="AI工程">
+
+
+
+
+    <!-- OpenGraph -->
+ 
+    <meta name="description" content="1 量化原理2 量化方式2.1 从量化流程分类一般来说, 可以按照如下方式对量化方法进行分类：ONNX Runtime支持动态量化和静态量化两种方式:  动态量化: scale和zero point会在前向推理时针对每个具体的输入去计算, 这会增加额外的计算开销, 但是量化后的精度下降更小。 静态量化: 需要在标定数据集上进行标定, 以此获得每个激活值的scale和zero point。 一般来说">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ONNX模型量化">
+<meta property="og:url" content="http://example.com/2023/03/30/ONNX%E6%A8%A1%E5%9E%8B%E9%87%8F%E5%8C%96/index.html">
+<meta property="og:site_name" content="Welcome to Phi-C&#39;s Blog">
+<meta property="og:description" content="1 量化原理2 量化方式2.1 从量化流程分类一般来说, 可以按照如下方式对量化方法进行分类：ONNX Runtime支持动态量化和静态量化两种方式:  动态量化: scale和zero point会在前向推理时针对每个具体的输入去计算, 这会增加额外的计算开销, 但是量化后的精度下降更小。 静态量化: 需要在标定数据集上进行标定, 以此获得每个激活值的scale和zero point。 一般来说">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://raw.githubusercontent.com/Phi-C/ImageBed/master/uPic/VH2skV.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/Phi-C/ImageBed/master/uPic/KFvJex.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/Phi-C/ImageBed/master/uPic/S3xKUC.png">
+<meta property="article:published_time" content="2023-03-30T14:26:10.000Z">
+<meta property="article:modified_time" content="2023-04-04T00:52:05.857Z">
+<meta property="article:tag" content="AI工程">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/Phi-C/ImageBed/master/uPic/VH2skV.png">
+
+
+    
+<link rel="stylesheet" href="/css/style/main.css">
+ 
+
+    
+    
+        <link rel="stylesheet" id="hl-default-theme" href="/css/highlight/default.css" media="none" onload="this.media='all'">
+        
+    
+
+    
+    
+
+    
+
+     
+    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+ 
+
+    <!-- custom head -->
+
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+    <body>
+        <div id="app" tabindex="-1">
+            <header class="header">
+    <div class="header__left">
+        <a href="/" class="button">
+            <span class="logo__text">XJ Chen&#39;s Blog</span>
+        </a>
+    </div>
+    <div class="header__right">
+        
+            <div class="navbar__menus">
+                
+                    <a href="/" class="navbar-menu button">首页</a>
+                
+                    <a href="/tags/" class="navbar-menu button">标签</a>
+                
+                    <a href="/archives/" class="navbar-menu button">归档</a>
+                
+                    <a href="/friends/" class="navbar-menu button">友链</a>
+                
+                    <a href="/page/" class="navbar-menu button">Page</a>
+                
+            </div>
+        
+        
+        
+
+        
+        
+
+        
+            <a class="dropdown-icon button" id="btn-dropdown" tabindex="0"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" width='24' height='24' fill="none" stroke="currentColor" stroke-width="0.7" stroke-linecap="round" stroke-linejoin="round"><path fill="currentColor" d="M3.314,4.8h13.372c0.41,0,0.743-0.333,0.743-0.743c0-0.41-0.333-0.743-0.743-0.743H3.314c-0.41,0-0.743,0.333-0.743,0.743C2.571,4.467,2.904,4.8,3.314,4.8z M16.686,15.2H3.314c-0.41,0-0.743,0.333-0.743,0.743s0.333,0.743,0.743,0.743h13.372c0.41,0,0.743-0.333,0.743-0.743S17.096,15.2,16.686,15.2z M16.686,9.257H3.314c-0.41,0-0.743,0.333-0.743,0.743s0.333,0.743,0.743,0.743h13.372c0.41,0,0.743-0.333,0.743-0.743S17.096,9.257,16.686,9.257z"></path></svg></a>
+            <div class="dropdown-menus" id="dropdown-menus">
+                
+                    <a href="/" class="dropdown-menu button">首页</a>
+                
+                    <a href="/tags/" class="dropdown-menu button">标签</a>
+                
+                    <a href="/archives/" class="dropdown-menu button">归档</a>
+                
+                    <a href="/friends/" class="dropdown-menu button">友链</a>
+                
+                    <a href="/page/" class="dropdown-menu button">Page</a>
+                
+            </div>
+        
+    </div>
+</header>
+
+
+            <main class="main">
+    
+
+<div class="post-title">
+    <h1 class="post-title__text">
+        ONNX模型量化
+    </h1>
+    <div class="post-title__meta">
+        <a href="/archives/2023/03/" class="post-meta__date button">2023-03-30</a>
+        
+ 
+        
+    
+     
+    <span id="busuanzi_container_page_pv" hidden>
+        <span class="separate-dot"></span>
+        <span></span>
+        <span id="busuanzi_value_page_pv"></span>
+        <span>Views</span>
+    </span>
+
+
+
+ 
+
+ 
+    </div>
+</div>
+
+
+
+<article class="post content-card">
+    <div class="post__header"></div>
+    <div class="post__content">
+        <h1 id="1-量化原理"><a href="#1-量化原理" class="headerlink" title="1 量化原理"></a>1 量化原理</h1><h1 id="2-量化方式"><a href="#2-量化方式" class="headerlink" title="2 量化方式"></a>2 量化方式</h1><h2 id="2-1-从量化流程分类"><a href="#2-1-从量化流程分类" class="headerlink" title="2.1 从量化流程分类"></a>2.1 从量化流程分类</h2><p>一般来说, 可以按照如下方式对量化方法进行分类：<br><img src="https://raw.githubusercontent.com/Phi-C/ImageBed/master/uPic/VH2skV.png" alt="VH2skV"><br>ONNX Runtime支持动态量化和静态量化两种方式:</p>
+<ul>
+<li>动态量化: <code>scale</code>和<code>zero point</code>会在前向推理时针对每个具体的输入去计算, 这会增加额外的计算开销, 但是量化后的精度下降更小。</li>
+<li>静态量化: 需要在标定数据集上进行标定, 以此获得每个激活值的<code>scale</code>和<code>zero point</code>。<blockquote>
+<p>一般来说, 建议对RNN和Transformer类模型使用动态量化, 对CNN类模型使用静态量化。因为像Transformer类的大模型, 由于存在异常值(数值远大于一般值的数), 对激活的量化可能会带来较大的精度损失。</p>
+</blockquote>
+</li>
+</ul>
+<h2 id="2-2-从量化后的数据类型分类"><a href="#2-2-从量化后的数据类型分类" class="headerlink" title="2.2 从量化后的数据类型分类"></a>2.2 从量化后的数据类型分类</h2><p>权重和激活量化后的数据类型都可以选择:</p>
+<ul>
+<li>Signed INT8</li>
+<li>Unsigned INT8</li>
+</ul>
+<p>对ONNX Runtime而言。如果后端是<code>CPU</code>, 那么支持的数据类型是U8U8、U8S8(激活: unsigned int8, 权重: signed int8)和S8S8; 如果后端是<code>GPU</code>, 那么仅支持S8S8.</p>
+<h2 id="2-3-从量化后的数据是否对称分类"><a href="#2-3-从量化后的数据是否对称分类" class="headerlink" title="2.3 从量化后的数据是否对称分类"></a>2.3 从量化后的数据是否对称分类</h2><ul>
+<li>对称量化(<code>zero point</code>为0, $min_val + max_val &#x3D; 0$)</li>
+<li>非对称量化</li>
+</ul>
+<h1 id="3-量化模型格式"><a href="#3-量化模型格式" class="headerlink" title="3 量化模型格式"></a>3 量化模型格式</h1><ul>
+<li>Tensor Oriented: QDQ格式的量化模型。用Q和DQ来模拟量化, 并在QDQ中存储着统计好的量化参数<code>scale</code>和<code>zero point</code>。</li>
+<li>Operator Oriented: QOperator格式的量化模型。有一些专门用于量化的算子, 比如<code>QLinearConv</code>, 量化在算子内部完成。</li>
+</ul>
+<h1 id="5-数据标定算法"><a href="#5-数据标定算法" class="headerlink" title="5 数据标定算法"></a>5 数据标定算法</h1><p>ONNX Runtime提供了两大类数据标定算法, 具体的实现可以在<code>onnxruntime/python/tools/quantization/calibrate.py</code>中阅读。</p>
+<ul>
+<li>MinMaxCalibrator</li>
+<li>HistogramCalibrator</li>
+</ul>
+<h2 id="5-1-基于最大值进行标定"><a href="#5-1-基于最大值进行标定" class="headerlink" title="5.1 基于最大值进行标定"></a>5.1 基于最大值进行标定</h2><p>选取最大值作为量化阈值。假设对于某层激活,前向了<code>N</code>个batch, 每次的最大值分别时$x_1$、$x_2$…$x_n$, 那么有几种策略可供选择:</p>
+<ul>
+<li>选取其中的最大值$x&#x3D;max(x_1,x_2,…,x_n)$作为量化阈值</li>
+<li>取平均$x&#x3D;mean(x_1,x_2,…x_n)$作为量化阈值</li>
+<li>取移动平均$x&#x3D;\alpha<em>x_{before}+(1-\alpha)</em> x_{current}$</li>
+</ul>
+<h2 id="5-2-基于统计直方图进行标定"><a href="#5-2-基于统计直方图进行标定" class="headerlink" title="5.2 基于统计直方图进行标定"></a>5.2 基于统计直方图进行标定</h2><p>这里ONNX Runtime给了两种基于直方图的标定方法：</p>
+<ul>
+<li>基于交叉熵标定(EntroypyCalibrator)<br>基本思路: 选取最佳量化阈值, 最小化<code>FP32</code>分布和<code>INT8</code>分布的<code>KL-Divergence</code>[AKA <code>相对熵</code>(<code>relative entropy</code>)]。该标定算法参考了NV TensorRT的实现, NV的流程如下图所示:<br><img src="https://raw.githubusercontent.com/Phi-C/ImageBed/master/uPic/KFvJex.png" alt="KFvJex"><blockquote>
+<p>问题: FP32分布如何统计得到？</p>
+</blockquote>
+</li>
+</ul>
+<p>根据NV的伪代码, 将FP32数据压缩成<code>T</code>个bin, 落在超出<code>bin[T-1]</code>的数值全部算在<code>bin[T-1]</code>里。这样就得到有T个值的分布<code>P</code>。</p>
+<blockquote>
+<p>问题: INT8分布如何统计得到?</p>
+</blockquote>
+<p>将T个bin压缩成128个bin, 得到一个有128个值的直方图。为了计算<code>KL散度</code>,再将这个分布扩充成和分布<code>P</code>拥有一样多数值的分布<code>Q</code>。</p>
+<p>一个具体的计算例子如下图所示:<br><img src="https://raw.githubusercontent.com/Phi-C/ImageBed/master/uPic/S3xKUC.png" alt="S3xKUC"></p>
+<blockquote>
+<p>问题: 交叉熵和KL散度的关系?</p>
+</blockquote>
+<p><strong>P相对于Q</strong>的<code>KL-Divergence</code>的计算公式为: $D_{KL}(P||Q)&#x3D;-\Sigma_{i}ln(\frac{Q_i}{P_i})$<br><strong>P相对于Q</strong>的交叉熵的计算公式为: $E(P||Q)&#x3D;-\Sigma_{i}(P_i<em>ln(Q_i))&#x3D;-P_i\Sigma_{i}(ln(\frac{Q_i</em>P_i}{P_i}))&#x3D;-P_i\Sigma_{i}(ln(P_i) + ln(\frac{Q_i}{P_i}))&#x3D;H(P) + D_{KL}(P||Q)$。当分布<code>P</code>是一个固定的分布时, 最小化KL散度等价于最小化交叉熵。</p>
+<ul>
+<li>基于累计分布函数标定(PercentileCalibrator)<br>通过<code>FP32</code>数据的累积分布函数(CDF), 配合percentile参数, 来选取量化阈值。当percentile参数趋于100%, 等价于minmax标定。</li>
+</ul>
+
+    </div>
+     
+    <div class="post-footer__meta"><p>updated at 2023-04-04</p></div> 
+    <div class="post-entry__tags"><a href="/tags/AI%E5%B7%A5%E7%A8%8B/" class="post-tags__link button"># AI工程</a></div> 
+</article>
+
+
+    <div class="nav">
+        <div class="nav__prev">
+            
+        </div>
+        <div class="nav__next">
+            
+                <a href="/2023/03/30/%E3%80%8A%E9%9B%B6%E5%94%AE%E7%9A%84%E5%93%B2%E5%AD%A6%E3%80%8B%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" class="nav__link">
+                    <div>
+                        <div class="nav__label">
+                            Next Post
+                        </div>
+                        <div class="nav__title">
+                            《零售的哲学》读书笔记
+                        </div>
+                    </div>
+                    <div>
+                        <svg viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" width="24" height="24"><path d="M434.944 790.624l-45.248-45.248L623.04 512l-233.376-233.376 45.248-45.248L713.568 512z" fill="#808080"></path></svg>
+                    </div>
+                </a>
+            
+        </div>
+    </div>
+
+
+
+
+
+</main>
+
+            <footer class="footer">
+    
+    
+
+
+    
+    
+    
+        <span id="busuanzi_container_site_uv" hidden>
+            <span></span>
+            <span id="busuanzi_value_site_uv"></span>
+            <span>Viewers</span>
+            
+                <span>&amp;nbsp;&amp;nbsp;&amp;nbsp;|</span>
+            
+        </span>
+    
+    
+        <span id="busuanzi_container_site_pv" hidden>
+            <span></span>
+            <span id="busuanzi_value_site_pv"></span>
+            <span>Views</span>
+            
+        </span>
+    
+ 
+ 
+
+ 
+    
+        
+        <p class="footer-copyright">
+            Copyright © 2023 <a href="/">Welcome to Phi-C&#39;s Blog</a>
+        </p>
+    
+    
+    
+    <p>Powered by <a href="https://hexo.io" target="_blank">Hexo</a> | Theme - <a href="https://github.com/ChrAlpha/hexo-theme-cards" target="_blank">Cards</a></p>
+</footer>
+        </div>
+         
+
+ 
+
+ 
+
+ 
+
+ 
+
+
+
+ 
+
+
+
+ 
+
+
+    
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+
+
+
+    </body>
+</html>
