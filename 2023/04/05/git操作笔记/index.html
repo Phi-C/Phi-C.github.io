@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+    <meta charset="utf-8">
+
+    
+
+    <!-- 渲染优化 -->
+    <meta name="renderer" content="webkit">
+    <meta name="force-rendering" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta name="HandheldFriendly" content="True" >
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+    <!--icon-->
+
+    
+    
+    
+    
+    
+
+
+    <!-- meta -->
+
+
+<title>git操作笔记 | Welcome to Phi-C&#39;s Blog</title>
+
+
+    <meta name="keywords" content="工具">
+
+
+
+
+    <!-- OpenGraph -->
+ 
+    <meta name="description" content="1 基本概念 工作区(working tree&#x2F;working directory)  暂存区(stage &#x2F; index)[1]  HEAD一个指针(头指针), 指向当前工作去所在的历史提交。  Detached HEADHEAD指向某个历史提交, 而不是某个分支。比如下图中，执行完git checkout main~3(或者git checkout b325c)后的HEAD">
+<meta property="og:type" content="article">
+<meta property="og:title" content="git操作笔记">
+<meta property="og:url" content="http://example.com/2023/04/05/git%E6%93%8D%E4%BD%9C%E7%AC%94%E8%AE%B0/index.html">
+<meta property="og:site_name" content="Welcome to Phi-C&#39;s Blog">
+<meta property="og:description" content="1 基本概念 工作区(working tree&#x2F;working directory)  暂存区(stage &#x2F; index)[1]  HEAD一个指针(头指针), 指向当前工作去所在的历史提交。  Detached HEADHEAD指向某个历史提交, 而不是某个分支。比如下图中，执行完git checkout main~3(或者git checkout b325c)后的HEAD">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://raw.githubusercontent.com/Phi-C/ImageBed/master/uPic/aHA9Hj.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/Phi-C/ImageBed/master/uPic/22PYkT.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/Phi-C/ImageBed/master/uPic/vbbCNx.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/Phi-C/ImageBed/master/uPic/N8Wsnk.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/Phi-C/ImageBed/master/uPic/WkxSAr.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/Phi-C/ImageBed/master/uPic/AqD7mM.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/Phi-C/ImageBed/master/uPic/ETZPqt.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/Phi-C/ImageBed/master/uPic/C27vGQ.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/Phi-C/ImageBed/master/uPic/l7EO1K.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/Phi-C/ImageBed/master/uPic/LrjmNx.png">
+<meta property="article:published_time" content="2023-04-05T02:03:39.000Z">
+<meta property="article:modified_time" content="2023-04-08T08:11:57.987Z">
+<meta property="article:tag" content="工具">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/Phi-C/ImageBed/master/uPic/aHA9Hj.png">
+
+
+    
+<link rel="stylesheet" href="/css/style/main.css">
+ 
+
+    
+    
+        <link rel="stylesheet" id="hl-default-theme" href="/css/highlight/default.css" media="none" onload="this.media='all'">
+        
+    
+
+    
+    
+
+    
+
+     
+    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+ 
+
+    <!-- custom head -->
+
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+    <body>
+        <div id="app" tabindex="-1">
+            <header class="header">
+    <div class="header__left">
+        <a href="/" class="button">
+            <span class="logo__text">XJ Chen&#39;s Blog</span>
+        </a>
+    </div>
+    <div class="header__right">
+        
+            <div class="navbar__menus">
+                
+                    <a href="/" class="navbar-menu button">首页</a>
+                
+                    <a href="/tags/" class="navbar-menu button">标签</a>
+                
+                    <a href="/archives/" class="navbar-menu button">归档</a>
+                
+                    <a href="/friends/" class="navbar-menu button">友链</a>
+                
+                    <a href="/page/" class="navbar-menu button">Page</a>
+                
+            </div>
+        
+        
+        
+
+        
+        
+
+        
+            <a class="dropdown-icon button" id="btn-dropdown" tabindex="0"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" width='24' height='24' fill="none" stroke="currentColor" stroke-width="0.7" stroke-linecap="round" stroke-linejoin="round"><path fill="currentColor" d="M3.314,4.8h13.372c0.41,0,0.743-0.333,0.743-0.743c0-0.41-0.333-0.743-0.743-0.743H3.314c-0.41,0-0.743,0.333-0.743,0.743C2.571,4.467,2.904,4.8,3.314,4.8z M16.686,15.2H3.314c-0.41,0-0.743,0.333-0.743,0.743s0.333,0.743,0.743,0.743h13.372c0.41,0,0.743-0.333,0.743-0.743S17.096,15.2,16.686,15.2z M16.686,9.257H3.314c-0.41,0-0.743,0.333-0.743,0.743s0.333,0.743,0.743,0.743h13.372c0.41,0,0.743-0.333,0.743-0.743S17.096,9.257,16.686,9.257z"></path></svg></a>
+            <div class="dropdown-menus" id="dropdown-menus">
+                
+                    <a href="/" class="dropdown-menu button">首页</a>
+                
+                    <a href="/tags/" class="dropdown-menu button">标签</a>
+                
+                    <a href="/archives/" class="dropdown-menu button">归档</a>
+                
+                    <a href="/friends/" class="dropdown-menu button">友链</a>
+                
+                    <a href="/page/" class="dropdown-menu button">Page</a>
+                
+            </div>
+        
+    </div>
+</header>
+
+
+            <main class="main">
+    
+
+<div class="post-title">
+    <h1 class="post-title__text">
+        git操作笔记
+    </h1>
+    <div class="post-title__meta">
+        <a href="/archives/2023/04/" class="post-meta__date button">2023-04-05</a>
+        
+ 
+        
+    
+     
+    <span id="busuanzi_container_page_pv" hidden>
+        <span class="separate-dot"></span>
+        <span></span>
+        <span id="busuanzi_value_page_pv"></span>
+        <span>Views</span>
+    </span>
+
+
+
+ 
+
+ 
+    </div>
+</div>
+
+
+
+<article class="post content-card">
+    <div class="post__header"></div>
+    <div class="post__content">
+        <h1 id="1-基本概念"><a href="#1-基本概念" class="headerlink" title="1 基本概念"></a>1 基本概念</h1><ul>
+<li><p>工作区(working tree&#x2F;working directory)</p>
+</li>
+<li><p>暂存区(stage &#x2F; index)[1]<br><img src="https://raw.githubusercontent.com/Phi-C/ImageBed/master/uPic/aHA9Hj.png" alt="aHA9Hj"></p>
+</li>
+<li><p>HEAD<br>一个指针(头指针), 指向当前工作去所在的历史提交。</p>
+</li>
+<li><p>Detached HEAD<br><code>HEAD</code>指向某个历史提交, 而不是某个分支。比如下图中，执行完<code>git checkout main~3</code>(或者<code>git checkout b325c</code>)后的<code>HEAD</code>就是<code>Detached HEAD</code>。<br><img src="https://raw.githubusercontent.com/Phi-C/ImageBed/master/uPic/22PYkT.png" alt="22PYkT"></p>
+<blockquote>
+<p>上图中，分支名<code>main</code>引用了<code>ed489</code>这个commit-id, 分支名<code>stable</code>引用了<code>a47c3</code>这个commit-id, <code>HEAD</code>引用了<code>b325c</code>这个commit-id</p>
+</blockquote>
+</li>
+</ul>
+<p>当HEAD处于分离状态（不依附于任一分支）时，提交操作可以正常进行，但是不会更新任何已命名的分支(可以认为这是在更新一个匿名分支)。一旦此后你切换到别的分支，比如说main，那么这个提交节点（可能）再也不会被引用到，然后就会被丢弃掉了。注意这个命令之后就不会有东西引用2eecb。图解如下[2]:<br><img src="https://raw.githubusercontent.com/Phi-C/ImageBed/master/uPic/vbbCNx.png" alt="vbbCNx"><br><img src="https://raw.githubusercontent.com/Phi-C/ImageBed/master/uPic/N8Wsnk.png" alt="N8Wsnk"></p>
+<p>解决办法: 在执行<code>git checkout main</code>之前执行<code>git checkout -b new-branch-name</code>.</p>
+<ul>
+<li>分支名<br>和<code>HEAD</code>一样，也是一个指针(实际上叫引用<code>ref</code>)</li>
+<li>补丁(patch)<br>补丁是一个文本文件, 按照邮件格式format, 包含有类似<code>git diff</code>的内容及其它一些元信息。和<code>patch</code>相关的一些命令:<code>git format-patch</code>、<code>git apply</code>。</li>
+</ul>
+<h1 id="2-基础操作"><a href="#2-基础操作" class="headerlink" title="2 基础操作"></a>2 基础操作</h1><ul>
+<li>基本配置<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">git config --global user.name xxx</span><br><span class="line">git config --global user.mail xxx</span><br><span class="line">ssh-key </span><br></pre></td></tr></table></figure></li>
+<li>本地管理<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">git add file_name</span><br><span class="line">git commit -m &quot;xxx&quot;</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">amend: 修正, 使用git commit --amend可以将修改(文件修改或者commit message修改)添加到上次提交上,避免出现很多次commit</span></span><br><span class="line">git commit --amend</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h1 id="3-分支操作"><a href="#3-分支操作" class="headerlink" title="3 分支操作"></a>3 分支操作</h1><ul>
+<li><p>查看分支</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git branch: 添加-a显示远程分支</span><br></pre></td></tr></table></figure></li>
+<li><p>创建分支</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git branch branch-name: 基于当前HEAD创建分支</span><br><span class="line">git branch branch-name commit-id: 基于commit-id提交创建分支</span><br></pre></td></tr></table></figure></li>
+<li><p>切换分支</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git checkout branch-name: 创建分支</span><br><span class="line">git checkout -b branch-name: 创建分支并切换到该分支</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>分支合并</p>
+<ul>
+<li>git  merge<br><code>git merge</code>将不同的分支合并起来, 可以分3中情况进行讨论:<ul>
+<li>另一个分支是当前提交的祖父节点: 合并命令将不做任何事情</li>
+<li>当前提交时另一个分支的祖父节点: 进行<code>fast-forward</code>合并, 指向只是简单移动, 生成一个<code>新的提交</code>。<br>  <img src="https://raw.githubusercontent.com/Phi-C/ImageBed/master/uPic/WkxSAr.png" alt="WkxSAr"></li>
+<li>三方合并(当前提交和另一个分支有公共的祖先节点): 可能需要解决冲突<br>  <img src="https://raw.githubusercontent.com/Phi-C/ImageBed/master/uPic/AqD7mM.png" alt="AqD7mM"></li>
+</ul>
+</li>
+<li>git rebase<br>另外一种比较常用的合并方法是使用变基命令<code>git rebase</code>, 使用该命令可以使得提交历史更加清晰, 便于管理。<code>git rebase</code>操作示意图如下, 它会在当前分支上重演另一个分支的历史:<br><img src="https://raw.githubusercontent.com/Phi-C/ImageBed/master/uPic/ETZPqt.png" alt="ETZPqt"></li>
+</ul>
+</li>
+<li><p>摘樱桃<code>cherry-pick</code><br>cherry-pick命令”复制”一个提交节点并在当前分支做一次完全一样的新提交.<br><img src="https://raw.githubusercontent.com/Phi-C/ImageBed/master/uPic/C27vGQ.png" alt="C27vGQ"></p>
+</li>
+</ul>
+<p><code>commit</code>后发现和远程代码库存在冲突时, 解决冲突的常用方法:</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">在本地仓库更新并合并代码</span></span><br><span class="line">git fetch origin</span><br><span class="line">git rebase origin/main</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">修改完冲突代码后进行提交</span></span><br><span class="line">git add -u</span><br><span class="line">git rebase --continue</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">更新patch并提交</span></span><br><span class="line">git push origin HEAD:refs/for/main</span><br></pre></td></tr></table></figure>
+<ul>
+<li>删除分支<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">删除本地分支</span></span><br><span class="line">git branch -d local_branch_name</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">删除远程分支</span></span><br><span class="line">git push &lt;远程主机名&gt; --delete &lt;远程分支名&gt;</span><br><span class="line">git push origin --delete master</span><br></pre></td></tr></table></figure></li>
+<li>修改提交历史<br>使用场景: 在某次<code>commit</code>后, 如果想撤销这次<code>commit</code>, 保留<code>commit</code>前的状态。<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git reset --soft HEAD^</span><br><span class="line">git reset [mode] commit-id    通用用法</span><br></pre></td></tr></table></figure>
+<code>git reset</code>是回到之前某个提交的状态, 我们用图来解释一下<code>git checkout commit-id</code>和<code>git reset commit-id</code>的区别。<br><img src="https://raw.githubusercontent.com/Phi-C/ImageBed/master/uPic/l7EO1K.png" alt="l7EO1K"><br>可以看到,使用<code>git reset</code>时, <code>HEAD</code>和<code>main</code>一并移动到了<code>b325c</code>。<br><code>git reset</code>有3中模式可供选择:<br>1、 –soft：只修改 HEAD 指针，不修改暂存区和工作区<br>2、 –mixed：修改 HEAD 指针和暂存区，不修改工作区（默认）<br>3、 –hard：修改 HEAD 指针、暂存区和工作区（完全回退）</li>
+</ul>
+<h1 id="4-远程操作"><a href="#4-远程操作" class="headerlink" title="4 远程操作"></a>4 远程操作</h1><p>常用命令:</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">git clone</span><br><span class="line">git fetch</span><br><span class="line">git merge</span><br><span class="line">git pull</span><br><span class="line">git push</span><br></pre></td></tr></table></figure>
+<p>常用的远程操作可以用下图进行概括[1]:<br><img src="https://raw.githubusercontent.com/Phi-C/ImageBed/master/uPic/LrjmNx.png" alt="LrjmNx"></p>
+<h1 id="5-参考资料"><a href="#5-参考资料" class="headerlink" title="5 参考资料"></a>5 参考资料</h1><p>1 <a target="_blank" rel="noopener" href="https://slides.tonycrane.cc/PracticalSkillsTutorial/lec2/#/">Git&#x2F;GitHub 基础介绍</a><br>2 <a target="_blank" rel="noopener" href="https://marklodato.github.io/visual-git-guide/index-zh-cn.html#detached">图解Git</a><br>3 <a target="_blank" rel="noopener" href="https://backlog.com/git-tutorial/cn/intro/intro1_1.html">猴子都懂的git入门</a><br>4 <a target="_blank" rel="noopener" href="https://git-scm.com/book/zh/v2">Pro-git</a></p>
+
+    </div>
+     
+    <div class="post-footer__meta"><p>updated at 2023-04-08</p></div> 
+    <div class="post-entry__tags"><a href="/tags/%E5%B7%A5%E5%85%B7/" class="post-tags__link button"># 工具</a></div> 
+</article>
+
+
+    <div class="nav">
+        <div class="nav__prev">
+            
+        </div>
+        <div class="nav__next">
+            
+                <a href="/2023/04/04/%E7%94%9F%E4%BA%A7%E8%80%85-%E6%B6%88%E8%B4%B9%E8%80%85%E5%92%8C%E6%9D%A1%E4%BB%B6%E5%8F%98%E9%87%8F/" class="nav__link">
+                    <div>
+                        <div class="nav__label">
+                            Next Post
+                        </div>
+                        <div class="nav__title">
+                            生产者-消费者和条件变量
+                        </div>
+                    </div>
+                    <div>
+                        <svg viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" width="24" height="24"><path d="M434.944 790.624l-45.248-45.248L623.04 512l-233.376-233.376 45.248-45.248L713.568 512z" fill="#808080"></path></svg>
+                    </div>
+                </a>
+            
+        </div>
+    </div>
+
+
+
+    <div class="post__comments content-card" id="comment">
+        
+    <h4>Comments</h4>
+    
+    <div id="disqus_thread">Unable to load Disqus, please make sure your network can access.</div>
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+
+
+    </div>
+
+
+
+</main>
+
+            <footer class="footer">
+    
+    
+
+
+    
+    
+    
+        <span id="busuanzi_container_site_uv" hidden>
+            <span></span>
+            <span id="busuanzi_value_site_uv"></span>
+            <span>Viewers</span>
+            
+                <span>&amp;nbsp;&amp;nbsp;&amp;nbsp;|</span>
+            
+        </span>
+    
+    
+        <span id="busuanzi_container_site_pv" hidden>
+            <span></span>
+            <span id="busuanzi_value_site_pv"></span>
+            <span>Views</span>
+            
+        </span>
+    
+ 
+ 
+
+ 
+    
+        
+        <p class="footer-copyright">
+            Copyright © 2023 <a href="/">Welcome to Phi-C&#39;s Blog</a>
+        </p>
+    
+    
+    
+    <p>Powered by <a href="https://hexo.io" target="_blank">Hexo</a> | Theme - <a href="https://github.com/ChrAlpha/hexo-theme-cards" target="_blank">Cards</a></p>
+</footer>
+        </div>
+         
+
+ 
+
+ 
+
+ 
+
+ 
+
+
+
+ 
+
+
+
+ 
+
+
+    
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+
+    
+    <script>
+        function loadComment() {
+            window.disqus_config = function () {
+                this.page.url = 'http://example.com/2023/04/05/git%E6%93%8D%E4%BD%9C%E7%AC%94%E8%AE%B0/';
+                this.page.identifier = '2023/04/05/git操作笔记/';
+            };
+            (function(){
+                var dsq = document.createElement('script');
+                dsq.type = 'text/javascript';
+                dsq.async = true;
+                dsq.src = '//' + 'cxj' + '.disqus.com/embed.js';
+                (document.head || document.body).appendChild(dsq);
+            })();
+        }
+    
+        var runningOnBrowser = typeof window !== "undefined";
+        var isBot = runningOnBrowser && !("onscroll" in window) || typeof navigator !== "undefined" && /(gle|ing|ro|msn)bot|crawl|spider|yand|duckgo/i.test(navigator.userAgent);
+        var supportsIntersectionObserver = runningOnBrowser && "IntersectionObserver" in window;
+    
+        setTimeout(function () {
+            if (!isBot && supportsIntersectionObserver) {
+                var comment_observer = new IntersectionObserver(function(entries) {
+                    if (entries[0].isIntersecting) {
+                        loadComment();
+                        comment_observer.disconnect();
+                    }
+                }, { threshold: [0] });
+                comment_observer.observe(document.getElementById('comment'));
+            } else {
+                loadComment();
+            }
+        }, 1);
+    </script>
+
+
+    
+
+    
+    
+
+    
+    
+    
+    
+    
+
+    
+    
+    
+    
+    
+
+    
+    
+    
+
+
+
+    <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+</body>
+</html>
