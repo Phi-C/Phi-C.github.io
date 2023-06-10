@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+    <meta charset="utf-8">
+
+    
+
+    <!-- 渲染优化 -->
+    <meta name="renderer" content="webkit">
+    <meta name="force-rendering" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta name="HandheldFriendly" content="True" >
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+    <!--icon-->
+
+    
+    
+    
+    
+    
+
+
+    <!-- meta -->
+
+
+<title>LLM之GLM模型 | Welcome to Phi-C&#39;s Blog</title>
+
+
+    <meta name="keywords" content="算法 大模型">
+
+
+
+
+    <!-- OpenGraph -->
+ 
+    <meta name="description" content="1 简介GLM模型是清华大学提出的一个LLM, 这个模型在中文数据集上的效果表现比较不错, 网络上也有一些针对这个模型的开发。Paper: 《GLM: General Language Model Pretraining with Autoregressive Blank Infilling》Repo:   official: https:&#x2F;&#x2F;github.com&#x2F;THUDM&#x2F;GLM huggin">
+<meta property="og:type" content="article">
+<meta property="og:title" content="LLM之GLM模型">
+<meta property="og:url" content="http://example.com/2023/05/20/LLM%E4%B9%8BGLM%E6%A8%A1%E5%9E%8B/index.html">
+<meta property="og:site_name" content="Welcome to Phi-C&#39;s Blog">
+<meta property="og:description" content="1 简介GLM模型是清华大学提出的一个LLM, 这个模型在中文数据集上的效果表现比较不错, 网络上也有一些针对这个模型的开发。Paper: 《GLM: General Language Model Pretraining with Autoregressive Blank Infilling》Repo:   official: https:&#x2F;&#x2F;github.com&#x2F;THUDM&#x2F;GLM huggin">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://raw.githubusercontent.com/Phi-C/ImageBed/master/uPic/glm-block.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/Phi-C/ImageBed/master/uPic/VNMgMc.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/Phi-C/ImageBed/master/uPic/ixh37D.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/Phi-C/ImageBed/master/uPic/YdNCY1.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/Phi-C/ImageBed/master/uPic/nPWcRC.png">
+<meta property="article:published_time" content="2023-05-20T12:57:26.000Z">
+<meta property="article:modified_time" content="2023-06-10T02:39:40.186Z">
+<meta property="article:tag" content="算法 大模型">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/Phi-C/ImageBed/master/uPic/glm-block.png">
+
+
+    
+<link rel="stylesheet" href="/css/style/main.css">
+ 
+
+    
+    
+        <link rel="stylesheet" id="hl-default-theme" href="/css/highlight/default.css" media="none" onload="this.media='all'">
+        
+    
+
+    
+    
+
+    
+
+     
+    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+ 
+
+    <!-- custom head -->
+
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+    <body>
+        <div id="app" tabindex="-1">
+            <header class="header">
+    <div class="header__left">
+        <a href="/" class="button">
+            <span class="logo__text">XJ Chen&#39;s Blog</span>
+        </a>
+    </div>
+    <div class="header__right">
+        
+            <div class="navbar__menus">
+                
+                    <a href="/" class="navbar-menu button">首页</a>
+                
+                    <a href="/tags/" class="navbar-menu button">标签</a>
+                
+                    <a href="/archives/" class="navbar-menu button">归档</a>
+                
+                    <a href="/friends/" class="navbar-menu button">友链</a>
+                
+                    <a href="/page/" class="navbar-menu button">Page</a>
+                
+            </div>
+        
+        
+        
+
+        
+        
+
+        
+            <a class="dropdown-icon button" id="btn-dropdown" tabindex="0"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" width='24' height='24' fill="none" stroke="currentColor" stroke-width="0.7" stroke-linecap="round" stroke-linejoin="round"><path fill="currentColor" d="M3.314,4.8h13.372c0.41,0,0.743-0.333,0.743-0.743c0-0.41-0.333-0.743-0.743-0.743H3.314c-0.41,0-0.743,0.333-0.743,0.743C2.571,4.467,2.904,4.8,3.314,4.8z M16.686,15.2H3.314c-0.41,0-0.743,0.333-0.743,0.743s0.333,0.743,0.743,0.743h13.372c0.41,0,0.743-0.333,0.743-0.743S17.096,15.2,16.686,15.2z M16.686,9.257H3.314c-0.41,0-0.743,0.333-0.743,0.743s0.333,0.743,0.743,0.743h13.372c0.41,0,0.743-0.333,0.743-0.743S17.096,9.257,16.686,9.257z"></path></svg></a>
+            <div class="dropdown-menus" id="dropdown-menus">
+                
+                    <a href="/" class="dropdown-menu button">首页</a>
+                
+                    <a href="/tags/" class="dropdown-menu button">标签</a>
+                
+                    <a href="/archives/" class="dropdown-menu button">归档</a>
+                
+                    <a href="/friends/" class="dropdown-menu button">友链</a>
+                
+                    <a href="/page/" class="dropdown-menu button">Page</a>
+                
+            </div>
+        
+    </div>
+</header>
+
+
+            <main class="main">
+    
+
+<div class="post-title">
+    <h1 class="post-title__text">
+        LLM之GLM模型
+    </h1>
+    <div class="post-title__meta">
+        <a href="/archives/2023/05/" class="post-meta__date button">2023-05-20</a>
+        
+ 
+        
+    
+     
+    <span id="busuanzi_container_page_pv" hidden>
+        <span class="separate-dot"></span>
+        <span></span>
+        <span id="busuanzi_value_page_pv"></span>
+        <span>Views</span>
+    </span>
+
+
+
+ 
+
+ 
+    </div>
+</div>
+
+
+
+<article class="post content-card">
+    <div class="post__header"></div>
+    <div class="post__content">
+        <h1 id="1-简介"><a href="#1-简介" class="headerlink" title="1 简介"></a>1 简介</h1><p>GLM模型是清华大学提出的一个LLM, 这个模型在中文数据集上的效果表现比较不错, 网络上也有一些针对这个模型的开发。<br>Paper: <a target="_blank" rel="noopener" href="https://arxiv.org/pdf/2103.10360.pdf">《GLM: General Language Model Pretraining with Autoregressive Blank Infilling》</a><br>Repo: </p>
+<ul>
+<li>official: <a target="_blank" rel="noopener" href="https://github.com/THUDM/GLM">https://github.com/THUDM/GLM</a></li>
+<li>huggingface: <a target="_blank" rel="noopener" href="https://huggingface.co/THUDM/chatglm-6b/tree/main">https://huggingface.co/THUDM/chatglm-6b/tree/main</a></li>
+<li>THUDM-ft: <a target="_blank" rel="noopener" href="https://github.com/THUDM/FasterTransformer/tree/main/examples/pytorch/glm">https://github.com/THUDM/FasterTransformer/tree/main/examples/pytorch/glm</a></li>
+</ul>
+<h1 id="2-算法原理"><a href="#2-算法原理" class="headerlink" title="2 算法原理"></a>2 算法原理</h1><p>阅读GLM论文后，我总结了GLM的3个Feature:</p>
+<ul>
+<li><p>独特的训练方式 &#x2F; 优化目标: 这理解也是论文的核心卖点, 讲了一个“general” language model的故事。而所谓的general, 是指一个预训练好的模型,可以同事在NLU、条件生成和无条件生成任务中均表现很好。</p>
+</li>
+<li><p>一些模型结构的微调: 1）对layernorm和残差连接的顺序做了调整(将layernorm放在Block前可以提高大模型的精度及训练的稳定性 Ref: 参考文献1); 2)将Block内MLP中两个FC间的激活函数替换成了GELU(而非其它模型使用的ReLU)。GLM的Block内是Self-Attention + MLP组成, Self-Attention通常有两个矩阵参数, 一个是QKV矩阵用于计算qkv向量, 一个参数矩阵用于做特征变换(就是一个FC做矩阵乘); MLP通常有两个参数矩阵做特征变换(2次矩阵乘), 先升维,再降维, 有点借鉴ResNet bottleneck的思想。</p>
+</li>
+<li><p>2D位置编码: 服务于Feature 1, 使用Rotary Position Encoding。</p>
+</li>
+</ul>
+<h2 id="2-1-模型结构简图"><a href="#2-1-模型结构简图" class="headerlink" title="2.1 模型结构简图"></a>2.1 模型结构简图</h2><p>GLM-Block也是基本的Attention-Block + GLU-Block.<br><img src="https://raw.githubusercontent.com/Phi-C/ImageBed/master/uPic/glm-block.png" alt="glm-block"></p>
+<h2 id="2-2-模型训练"><a href="#2-2-模型训练" class="headerlink" title="2.2 模型训练"></a>2.2 模型训练</h2><p>数据处理：将输入tokens$[x_1, …, x_n]$随机mask掉一些text span, 然后将mask掉的这些token用一个特殊token$[M]$表示, 从而形成输入到GLM模型中的corrupted token ids. 这个过程用论文中的这张图可以很好的表达：<br><img src="https://raw.githubusercontent.com/Phi-C/ImageBed/master/uPic/VNMgMc.png" alt="VNMgMc"><br>优化函数: 使用的是最大似然估计, 最大化生成概率的对数和。其中$Z_m$是所有m个被mask掉的text span的排列序号的集合, 一共可以有$m!$中排列方案; $p_\theta(s_{z_i}|x_{corrupt},s_{z<i>})$表示的是第$i$个text span的条件生成概率, 它的条件是已知输入$x_{corrupt}$和前$i-1$个生成的text span。具体的优化函数如下：<br> $ maxE_{z \sim Z_{m}} [\Sigma_{i&#x3D;1}^{m}\log P_{\theta}(s_ {z_{i}}|x_{corrupt},s_{z&lt;i})$]</p>
+<p>GLM模型使用了P-tuning V2这一fine-tuing schema, 这个方法也是清华Jie Tang老师团队的工作。</p>
+<h2 id="2-3-Rotary位置编码"><a href="#2-3-Rotary位置编码" class="headerlink" title="2.3 Rotary位置编码"></a>2.3 Rotary位置编码</h2><p>GLM工作使用的位置编码是国内追一科技提出的旋转位置编码(Rotary Position Embedding), 这一工作还是比较受领域内人员的认可, 像LLaMA也是采用了这种位置编码方案。</p>
+<p>RoPE借助attention的计算, 实现了将绝对位置编码转换成相对位置编码。具体来说, 如果使用$f(x,idx)$表示绝对位置编码, 我们期望找到一个合适的映射关系$f$, 使其满足:<br>$$&lt;f(q,m)\cdot f(k,n)&gt; &#x3D; g(q, k, (m-n))$$<br>经过一系列推导, 得到的变换$f$可以用下面的计算表达:<br><img src="https://raw.githubusercontent.com/Phi-C/ImageBed/master/uPic/ixh37D.png" alt="ixh37D"><br>这是一个分块对角矩阵, 而每个分块又是一个2D旋转矩阵, 所以这种位置编码方式叫做旋转位置编码。另外, 由于这个矩阵是一个稀疏矩阵, 处于计算效率的考量, 可以用下面的计算来实现。<br><img src="https://raw.githubusercontent.com/Phi-C/ImageBed/master/uPic/YdNCY1.png" alt="YdNCY1"></p>
+<p>不同于原论文的旋转位置编码方法, GLM做了一点细微的改动: 每个token有两个position_id, 第一个id表示在输入$x_{corrupt}$中的index，第二个id表示在text span内部的index, 这两个id可以参考图2(c)中的例子。所以对一个128维的特征, GLM将它split成2个64维特征, 分别使用这两个id去计算旋转位置编码。</p>
+<h1 id="3-张量并行方案"><a href="#3-张量并行方案" class="headerlink" title="3 张量并行方案"></a>3 张量并行方案</h1><p>使用的是NV的Megatron方案, Megatron并行的方案可以参考文献1. 如果要高度概括一下, 可以总结成以下三点:</p>
+<ul>
+<li>对Self-Attention, 在head_num的维度上切分进行张量并行, 即每张卡都对部分头进行注意力计算;</li>
+<li>MLP的两层FC权重, 一个横切 + 一个纵切, 这样的切法可以减少一次通信次数;</li>
+<li>每个Block内需要进行两次AllReduce操作, 一次是在attention_dense后, 一次是在MLP的最后一层FC后。<br><img src="https://raw.githubusercontent.com/Phi-C/ImageBed/master/uPic/nPWcRC.png" alt="nPWcRC"></li>
+</ul>
+<p>如果约定一下符号, Self-Attention的切分可以表示成:</p>
+<ul>
+<li>[b, s, h] x [h, 3h &#x2F; p] &#x3D; [b, s, 3h &#x2F; p]: h是n个头的特征维数, 每张卡上负责n &#x2F; p个头的注意力计算, 所以特征数是 n &#x2F; p * h &#x2F; n &#x3D; h &#x2F; p;</li>
+<li>[b, s, h &#x2F; n] x [b, s, h &#x2F; n].transpose &#x3D; [b, s, s]: 每张卡都会为每个头计算attention score</li>
+<li>[b, s, s] x [b, s, h &#x2F; n] &#x3D; [b, s, h &#x2F; n]: 每个头都计算出自己的value, 然后每张卡内的value值concatenate起来, 得到[b, s, h &#x2F; p], (对应上图的Y1或Y2).</li>
+<li>[b, s, h &#x2F;p] x [b, h &#x2F; p, h] &#x3D; [b, s, h], (对应上图的Z1或Z2)</li>
+<li>将各张卡上的结果做一次all_reduce_sum</li>
+</ul>
+<h1 id="4-优化手段"><a href="#4-优化手段" class="headerlink" title="4 优化手段"></a>4 优化手段</h1><ul>
+<li>针对特定硬件的算子优化</li>
+<li>内存复用</li>
+<li>算子融合</li>
+<li>数据类型, e.g. INT8 &#x2F; INT4</li>
+</ul>
+<h1 id="5-参考资料"><a href="#5-参考资料" class="headerlink" title="5 参考资料"></a>5 参考资料</h1><p>1 <a target="_blank" rel="noopener" href="https://arxiv.org/pdf/1909.08053.pdf">《Megatron-LM: Training Multi-Billion Parameter Language Models Using Model Parallelism》</a><br>2 <a target="_blank" rel="noopener" href="https://kexue.fm/archives/8265">博采众长的旋转位置编码</a></p>
+
+    </div>
+     
+    <div class="post-footer__meta"><p>updated at 2023-06-10</p></div> 
+    <div class="post-entry__tags"><a href="/tags/%E7%AE%97%E6%B3%95-%E5%A4%A7%E6%A8%A1%E5%9E%8B/" class="post-tags__link button"># 算法 大模型</a></div> 
+</article>
+
+
+    <div class="nav">
+        <div class="nav__prev">
+            
+        </div>
+        <div class="nav__next">
+            
+                <a href="/2023/04/15/%E5%93%B2%E5%AD%A6%E5%AE%B6%E5%90%83%E9%A5%AD%E9%97%AE%E9%A2%98%E5%92%8C%E4%BF%A1%E5%8F%B7%E9%87%8F/" class="nav__link">
+                    <div>
+                        <div class="nav__label">
+                            Next Post
+                        </div>
+                        <div class="nav__title">
+                            哲学家吃饭问题和信号量
+                        </div>
+                    </div>
+                    <div>
+                        <svg viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" width="24" height="24"><path d="M434.944 790.624l-45.248-45.248L623.04 512l-233.376-233.376 45.248-45.248L713.568 512z" fill="#808080"></path></svg>
+                    </div>
+                </a>
+            
+        </div>
+    </div>
+
+
+
+    <div class="post__comments content-card" id="comment">
+        
+    <h4>Comments</h4>
+    
+    <div id="disqus_thread">Unable to load Disqus, please make sure your network can access.</div>
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+
+
+    </div>
+
+
+
+</main>
+
+            <footer class="footer">
+    
+    
+
+
+    
+    
+    
+        <span id="busuanzi_container_site_uv" hidden>
+            <span></span>
+            <span id="busuanzi_value_site_uv"></span>
+            <span>Viewers</span>
+            
+                <span>&amp;nbsp;&amp;nbsp;&amp;nbsp;|</span>
+            
+        </span>
+    
+    
+        <span id="busuanzi_container_site_pv" hidden>
+            <span></span>
+            <span id="busuanzi_value_site_pv"></span>
+            <span>Views</span>
+            
+        </span>
+    
+ 
+ 
+
+ 
+    
+        
+        <p class="footer-copyright">
+            Copyright © 2023 <a href="/">Welcome to Phi-C&#39;s Blog</a>
+        </p>
+    
+    
+    
+    <p>Powered by <a href="https://hexo.io" target="_blank">Hexo</a> | Theme - <a href="https://github.com/ChrAlpha/hexo-theme-cards" target="_blank">Cards</a></p>
+</footer>
+        </div>
+         
+
+ 
+
+ 
+
+ 
+
+ 
+
+
+
+ 
+
+
+
+ 
+
+
+    
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+
+    
+    <script>
+        function loadComment() {
+            window.disqus_config = function () {
+                this.page.url = 'http://example.com/2023/05/20/LLM%E4%B9%8BGLM%E6%A8%A1%E5%9E%8B/';
+                this.page.identifier = '2023/05/20/LLM之GLM模型/';
+            };
+            (function(){
+                var dsq = document.createElement('script');
+                dsq.type = 'text/javascript';
+                dsq.async = true;
+                dsq.src = '//' + 'cxj' + '.disqus.com/embed.js';
+                (document.head || document.body).appendChild(dsq);
+            })();
+        }
+    
+        var runningOnBrowser = typeof window !== "undefined";
+        var isBot = runningOnBrowser && !("onscroll" in window) || typeof navigator !== "undefined" && /(gle|ing|ro|msn)bot|crawl|spider|yand|duckgo/i.test(navigator.userAgent);
+        var supportsIntersectionObserver = runningOnBrowser && "IntersectionObserver" in window;
+    
+        setTimeout(function () {
+            if (!isBot && supportsIntersectionObserver) {
+                var comment_observer = new IntersectionObserver(function(entries) {
+                    if (entries[0].isIntersecting) {
+                        loadComment();
+                        comment_observer.disconnect();
+                    }
+                }, { threshold: [0] });
+                comment_observer.observe(document.getElementById('comment'));
+            } else {
+                loadComment();
+            }
+        }, 1);
+    </script>
+
+
+    
+
+    
+    
+
+    
+    
+    
+    
+    
+
+    
+    
+    
+    
+    
+
+    
+    
+    
+
+
+
+    <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+</body>
+</html>
