@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+    <meta charset="utf-8">
+
+    
+
+    <!-- 渲染优化 -->
+    <meta name="renderer" content="webkit">
+    <meta name="force-rendering" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta name="HandheldFriendly" content="True" >
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+    <!--icon-->
+
+    
+    
+    
+    
+    
+
+
+    <!-- meta -->
+
+
+<title>LLM量化之SmoothQuant | Welcome to Phi-C&#39;s Blog</title>
+
+
+    <meta name="keywords" content="算法 大模型 量化">
+
+
+
+
+    <!-- OpenGraph -->
+ 
+    <meta name="description" content="paper: 《SmoothQuant: Accurate and Efficient Post-Training Quantization for Large Language Models》repo: https:&#x2F;&#x2F;github.com&#x2F;mit-han-lab&#x2F;smoothquant  SmoothQuant is a training-free, accuracy-preserving,">
+<meta property="og:type" content="article">
+<meta property="og:title" content="LLM量化之SmoothQuant">
+<meta property="og:url" content="http://example.com/2023/08/03/LLM%E9%87%8F%E5%8C%96%E4%B9%8BSmoothQuant/index.html">
+<meta property="og:site_name" content="Welcome to Phi-C&#39;s Blog">
+<meta property="og:description" content="paper: 《SmoothQuant: Accurate and Efficient Post-Training Quantization for Large Language Models》repo: https:&#x2F;&#x2F;github.com&#x2F;mit-han-lab&#x2F;smoothquant  SmoothQuant is a training-free, accuracy-preserving,">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://raw.githubusercontent.com/Phi-C/ImageBed/master/uPic/Fs1q5i.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/Phi-C/ImageBed/master/uPic/Lj729N.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/Phi-C/ImageBed/master/uPic/vjlBZ4.png">
+<meta property="article:published_time" content="2023-08-03T03:23:39.000Z">
+<meta property="article:modified_time" content="2023-10-28T06:25:34.841Z">
+<meta property="article:tag" content="算法 大模型 量化">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/Phi-C/ImageBed/master/uPic/Fs1q5i.png">
+
+
+    
+<link rel="stylesheet" href="/css/style/main.css">
+ 
+
+    
+    
+        <link rel="stylesheet" id="hl-default-theme" href="/css/highlight/default.css" media="none" onload="this.media='all'">
+        
+    
+
+    
+    
+
+    
+
+     
+    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+ 
+
+    <!-- custom head -->
+
+<meta name="generator" content="Hexo 6.3.0"><style>mjx-container[jax="SVG"] {
+  direction: ltr;
+}
+
+mjx-container[jax="SVG"] > svg {
+  overflow: visible;
+}
+
+mjx-container[jax="SVG"][display="true"] {
+  display: block;
+  text-align: center;
+  margin: 1em 0;
+}
+
+mjx-container[jax="SVG"][justify="left"] {
+  text-align: left;
+}
+
+mjx-container[jax="SVG"][justify="right"] {
+  text-align: right;
+}
+
+g[data-mml-node="merror"] > g {
+  fill: red;
+  stroke: red;
+}
+
+g[data-mml-node="merror"] > rect[data-background] {
+  fill: yellow;
+  stroke: none;
+}
+
+g[data-mml-node="mtable"] > line[data-line] {
+  stroke-width: 70px;
+  fill: none;
+}
+
+g[data-mml-node="mtable"] > rect[data-frame] {
+  stroke-width: 70px;
+  fill: none;
+}
+
+g[data-mml-node="mtable"] > .mjx-dashed {
+  stroke-dasharray: 140;
+}
+
+g[data-mml-node="mtable"] > .mjx-dotted {
+  stroke-linecap: round;
+  stroke-dasharray: 0,140;
+}
+
+g[data-mml-node="mtable"] > svg {
+  overflow: visible;
+}
+
+[jax="SVG"] mjx-tool {
+  display: inline-block;
+  position: relative;
+  width: 0;
+  height: 0;
+}
+
+[jax="SVG"] mjx-tool > mjx-tip {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+mjx-tool > mjx-tip {
+  display: inline-block;
+  padding: .2em;
+  border: 1px solid #888;
+  font-size: 70%;
+  background-color: #F8F8F8;
+  color: black;
+  box-shadow: 2px 2px 5px #AAAAAA;
+}
+
+g[data-mml-node="maction"][data-toggle] {
+  cursor: pointer;
+}
+
+mjx-status {
+  display: block;
+  position: fixed;
+  left: 1em;
+  bottom: 1em;
+  min-width: 25%;
+  padding: .2em .4em;
+  border: 1px solid #888;
+  font-size: 90%;
+  background-color: #F8F8F8;
+  color: black;
+}
+
+foreignObject[data-mjx-xml] {
+  font-family: initial;
+  line-height: normal;
+  overflow: visible;
+}
+
+.MathJax path {
+  stroke-width: 3;
+}
+
+mjx-container[display="true"] {
+  overflow: auto hidden;
+}
+
+mjx-container[display="true"] + br {
+  display: none;
+}
+</style></head>
+
+    <body>
+        <div id="app" tabindex="-1">
+            <header class="header">
+    <div class="header__left">
+        <a href="/" class="button">
+            <span class="logo__text">XJ Chen&#39;s Blog</span>
+        </a>
+    </div>
+    <div class="header__right">
+        
+            <div class="navbar__menus">
+                
+                    <a href="/" class="navbar-menu button">首页</a>
+                
+                    <a href="/tags/" class="navbar-menu button">标签</a>
+                
+                    <a href="/archives/" class="navbar-menu button">归档</a>
+                
+                    <a href="/friends/" class="navbar-menu button">友链</a>
+                
+                    <a href="/page/" class="navbar-menu button">Page</a>
+                
+            </div>
+        
+        
+        
+
+        
+        
+
+        
+            <a class="dropdown-icon button" id="btn-dropdown" tabindex="0"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" width='24' height='24' fill="none" stroke="currentColor" stroke-width="0.7" stroke-linecap="round" stroke-linejoin="round"><path fill="currentColor" d="M3.314,4.8h13.372c0.41,0,0.743-0.333,0.743-0.743c0-0.41-0.333-0.743-0.743-0.743H3.314c-0.41,0-0.743,0.333-0.743,0.743C2.571,4.467,2.904,4.8,3.314,4.8z M16.686,15.2H3.314c-0.41,0-0.743,0.333-0.743,0.743s0.333,0.743,0.743,0.743h13.372c0.41,0,0.743-0.333,0.743-0.743S17.096,15.2,16.686,15.2z M16.686,9.257H3.314c-0.41,0-0.743,0.333-0.743,0.743s0.333,0.743,0.743,0.743h13.372c0.41,0,0.743-0.333,0.743-0.743S17.096,9.257,16.686,9.257z"></path></svg></a>
+            <div class="dropdown-menus" id="dropdown-menus">
+                
+                    <a href="/" class="dropdown-menu button">首页</a>
+                
+                    <a href="/tags/" class="dropdown-menu button">标签</a>
+                
+                    <a href="/archives/" class="dropdown-menu button">归档</a>
+                
+                    <a href="/friends/" class="dropdown-menu button">友链</a>
+                
+                    <a href="/page/" class="dropdown-menu button">Page</a>
+                
+            </div>
+        
+    </div>
+</header>
+
+
+            <main class="main">
+    
+
+<div class="post-title">
+    <h1 class="post-title__text">
+        LLM量化之SmoothQuant
+    </h1>
+    <div class="post-title__meta">
+        <a href="/archives/2023/08/" class="post-meta__date button">2023-08-03</a>
+        
+ 
+        
+    
+     
+    <span id="busuanzi_container_page_pv" hidden>
+        <span class="separate-dot"></span>
+        <span></span>
+        <span id="busuanzi_value_page_pv"></span>
+        <span>Views</span>
+    </span>
+
+
+
+ 
+
+ 
+    </div>
+</div>
+
+
+
+<article class="post content-card">
+    <div class="post__header"></div>
+    <div class="post__content">
+        <p>paper: <a target="_blank" rel="noopener" href="https://arxiv.org/abs/2211.10438">《SmoothQuant: Accurate and Efficient Post-Training Quantization for Large Language Models<br>》</a><br>repo: <a target="_blank" rel="noopener" href="https://github.com/mit-han-lab/smoothquant">https://github.com/mit-han-lab/smoothquant</a></p>
+<blockquote>
+<p>SmoothQuant is a training-free, accuracy-preserving, and general-purpose <strong>post-training quantization(PTQ)</strong> solution to enable <strong>8-bit weight, 8-bit activation(W8A8)</strong> quantization for LLMs.</p>
+</blockquote>
+<h1 id="1-动机"><a href="#1-动机" class="headerlink" title="1 动机"></a>1 动机</h1><p>许多实验表明, 对LLM进行量化，激活值会比权重更难量化，因为: LLM会出现系统性的离群点，这些离群点的值通常会比正常值大很多倍, 引入较大的量化误差。<br><img src="https://raw.githubusercontent.com/Phi-C/ImageBed/master/uPic/Fs1q5i.png" alt="Fs1q5i"><br>根据论文, LLM激活值和权重的分布具有如下特点：</p>
+<ul>
+<li>激活值的有些channel会出现系统性离群点, 这些离群点的值通常非常大</li>
+<li>这些离群点通常出现在某些特定的channel</li>
+<li>每个channel内的数值方差较小</li>
+<li>权重的分布相对均匀，即使有离群点, token维度的方差也不大(激活值在token维度的方差较大) [上图标明了token维度和channel维度]</li>
+</ul>
+<h1 id="2-方法"><a href="#2-方法" class="headerlink" title="2 方法"></a>2 方法</h1><h3 id="2-1-不同粒度的量化"><a href="#2-1-不同粒度的量化" class="headerlink" title="2.1 不同粒度的量化"></a>2.1 不同粒度的量化</h3><p><img src="https://raw.githubusercontent.com/Phi-C/ImageBed/master/uPic/Lj729N.png" alt="Lj729N"></p>
+<ul>
+<li>LLM中大多数激活值的shape可以表示为<code>[B, L, H*D]</code>, 所谓<code>per-token</code>对应着<code>L</code>所在的维度，<code>per-channel</code>对应着<code>H*D</code>的维度。</li>
+<li>上图(b)表示对激活值做<code>per-token</code>量化,对权重做<code>per-channel</code>量化, 它对应的数学表达式可以组织成如下形式<br>$$\mathbf{Y}=\operatorname{diag}\left(\boldsymbol{\Delta}<em>{\mathbf{X}}^{\mathrm{FP} 16}\right) \cdot\left(\overline{\mathbf{X}}^{\mathrm{INT} 8} \cdot \overline{\mathbf{W}}^{\mathrm{INT} 8}\right) \cdot \operatorname{diag}\left(\boldsymbol{\Delta}</em>{\mathbf{W}}^{\mathrm{FP} 16}\right)$$</li>
+<li>对激活值做<code>per-token</code>量化的效果只是略好于<code>per-tensor</code>量化(原因从动机一节也可以理解), 之所以没有直接做<code>per-chnnel</code>量化在于这一操作对硬件并不优化, 论文原文是这样描述的<blockquote>
+<p>However, per-channel activation quantization does not map well to hardware-accelerated GEMM kernels, that rely on a sequence of operations executed at a high throughput (e.g., Tensor Core MMAs) and do not tolerate the insertion of instructions with a lower throughput (e.g., conversions or CUDA Core FMAs) in that sequence.</p>
+</blockquote>
+</li>
+</ul>
+<h3 id="2-2-SmoothQuant的量化策略"><a href="#2-2-SmoothQuant的量化策略" class="headerlink" title="2.2 SmoothQuant的量化策略"></a>2.2 SmoothQuant的量化策略</h3><p>一句话概括SmoothQuant: 通过数学上的等价变换，完成了<code>outlier magnitute migration</code>。这样, 激活和权重的分布都相对flat, 从而可以使用<code>per-tensor</code>量化。<br><img src="https://raw.githubusercontent.com/Phi-C/ImageBed/master/uPic/vjlBZ4.png" alt="vjlBZ4"></p>
+<ul>
+<li>首先在Calibration Set上获取激活值的<code>per-cahnnel</code>最大值</li>
+<li>然后做权重变换</li>
+<li>最后在变换后的模型上过Calibration Set，确定量化的scale值</li>
+</ul>
+<h3 id="2-3-总结"><a href="#2-3-总结" class="headerlink" title="2.3 总结"></a>2.3 总结</h3><ul>
+<li>如果是原来<code>per-tensor</code>或者<code>per-token</code>的量化, 都是直接对激活值或权重量化</li>
+<li>在SmoothQuant方案中, 会先对权重进行<code>smooth变换</code>, 然后对变换后的权重进行量化</li>
+<li>migration strength <mjx-container class="MathJax" jax="SVG"><svg style="vertical-align: -0.025ex;" xmlns="http://www.w3.org/2000/svg" width="1.448ex" height="1.025ex" role="img" focusable="false" viewBox="0 -442 640 453"><g stroke="currentColor" fill="currentColor" stroke-width="0" transform="scale(1,-1)"><g data-mml-node="math"><g data-mml-node="mi"><path data-c="1D6FC" d="M34 156Q34 270 120 356T309 442Q379 442 421 402T478 304Q484 275 485 237V208Q534 282 560 374Q564 388 566 390T582 393Q603 393 603 385Q603 376 594 346T558 261T497 161L486 147L487 123Q489 67 495 47T514 26Q528 28 540 37T557 60Q559 67 562 68T577 70Q597 70 597 62Q597 56 591 43Q579 19 556 5T512 -10H505Q438 -10 414 62L411 69L400 61Q390 53 370 41T325 18T267 -2T203 -11Q124 -11 79 39T34 156ZM208 26Q257 26 306 47T379 90L403 112Q401 255 396 290Q382 405 304 405Q235 405 183 332Q156 292 139 224T121 120Q121 71 146 49T208 26Z"></path></g></g></g></svg></mjx-container>的选择和具体模型相关, 是一个超参数，若激活值的离群现象严重，应该选取更大的<mjx-container class="MathJax" jax="SVG"><svg style="vertical-align: -0.025ex;" xmlns="http://www.w3.org/2000/svg" width="1.448ex" height="1.025ex" role="img" focusable="false" viewBox="0 -442 640 453"><g stroke="currentColor" fill="currentColor" stroke-width="0" transform="scale(1,-1)"><g data-mml-node="math"><g data-mml-node="mi"><path data-c="1D6FC" d="M34 156Q34 270 120 356T309 442Q379 442 421 402T478 304Q484 275 485 237V208Q534 282 560 374Q564 388 566 390T582 393Q603 393 603 385Q603 376 594 346T558 261T497 161L486 147L487 123Q489 67 495 47T514 26Q528 28 540 37T557 60Q559 67 562 68T577 70Q597 70 597 62Q597 56 591 43Q579 19 556 5T512 -10H505Q438 -10 414 62L411 69L400 61Q390 53 370 41T325 18T267 -2T203 -11Q124 -11 79 39T34 156ZM208 26Q257 26 306 47T379 90L403 112Q401 255 396 290Q382 405 304 405Q235 405 183 332Q156 292 139 224T121 120Q121 71 146 49T208 26Z"></path></g></g></g></svg></mjx-container>值。</li>
+<li>对激活值的变换是一个运行时行为, 如果可以的话可以将激活值的变换转移到前一个算子(比如对QVK矩阵计算, 可以将激活值的变换转移到前面的layernomr算子), 对于无法转移的(比如GLU最后一个FC的输入激活值)则需要插入进行激活值变换的算子(一个乘法算子)</li>
+</ul>
+
+    </div>
+     
+    <div class="post-footer__meta"><p>updated at 2023-10-28</p></div> 
+    <div class="post-entry__tags"><a href="/tags/%E7%AE%97%E6%B3%95-%E5%A4%A7%E6%A8%A1%E5%9E%8B-%E9%87%8F%E5%8C%96/" class="post-tags__link button"># 算法 大模型 量化</a></div> 
+</article>
+
+
+    <div class="nav">
+        <div class="nav__prev">
+            
+        </div>
+        <div class="nav__next">
+            
+                <a href="/2023/07/01/LLM%E4%B9%8BLlama%E6%A8%A1%E5%9E%8B/" class="nav__link">
+                    <div>
+                        <div class="nav__label">
+                            Next Post
+                        </div>
+                        <div class="nav__title">
+                            LLM之Llama模型
+                        </div>
+                    </div>
+                    <div>
+                        <svg viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" width="24" height="24"><path d="M434.944 790.624l-45.248-45.248L623.04 512l-233.376-233.376 45.248-45.248L713.568 512z" fill="#808080"></path></svg>
+                    </div>
+                </a>
+            
+        </div>
+    </div>
+
+
+
+    <div class="post__comments content-card" id="comment">
+        
+    <h4>Comments</h4>
+    
+    <div id="disqus_thread">Unable to load Disqus, please make sure your network can access.</div>
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+
+
+    </div>
+
+
+
+</main>
+
+            <footer class="footer">
+    
+    
+
+
+    
+    
+    
+        <span id="busuanzi_container_site_uv" hidden>
+            <span></span>
+            <span id="busuanzi_value_site_uv"></span>
+            <span>Viewers</span>
+            
+                <span>&amp;nbsp;&amp;nbsp;&amp;nbsp;|</span>
+            
+        </span>
+    
+    
+        <span id="busuanzi_container_site_pv" hidden>
+            <span></span>
+            <span id="busuanzi_value_site_pv"></span>
+            <span>Views</span>
+            
+        </span>
+    
+ 
+ 
+
+ 
+    
+        
+        <p class="footer-copyright">
+            Copyright © 2023 <a href="/">Welcome to Phi-C&#39;s Blog</a>
+        </p>
+    
+    
+    
+    <p>Powered by <a href="https://hexo.io" target="_blank">Hexo</a> | Theme - <a href="https://github.com/ChrAlpha/hexo-theme-cards" target="_blank">Cards</a></p>
+</footer>
+        </div>
+         
+
+ 
+
+ 
+
+ 
+
+ 
+
+
+
+ 
+
+
+
+ 
+
+
+    
+ 
+
+ 
+
+
+    <script>
+        if (typeof MathJax === 'undefined') {
+            window.MathJax = {
+                loader: {
+                    source: {
+                        '[tex]/amsCd': '[tex]/amscd',
+                        '[tex]/AMScd': '[tex]/amscd'
+                    }
+                },
+                tex: {
+                    inlineMath: {'[+]': [['$', '$']]},
+                    tags: 'ams'
+                },
+                options: {
+                    renderActions: {
+                        findScript: [10, doc => {
+                            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+                                const display = !!node.type.match(/; *mode=display/);
+                                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+                                const text = document.createTextNode('');
+                                node.parentNode.replaceChild(text, node);
+                                math.start = {node: text, delim: '', n: 0};
+                                math.end = {node: text, delim: '', n: 0};
+                                doc.math.push(math);
+                            });
+                        }, '', false],
+                        insertedScript: [200, () => {
+                            document.querySelectorAll('mjx-container').forEach(node => {
+                                let target = node.parentNode;
+                                if (target.nodeName.toLowerCase() === 'li') {
+                                    target.parentNode.classList.add('has-jax');
+                                }
+                            });
+                        }, '', false]
+                    }
+                }
+            };
+            (function () {
+                var script = document.createElement('script');
+                script.src = "[object Object]";
+                script.defer = true;
+                document.head.appendChild(script);
+            })();
+        } else {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+        }
+    </script>
+ 
+
+ 
+
+ 
+
+ 
+
+
+    
+    <script>
+        function loadComment() {
+            window.disqus_config = function () {
+                this.page.url = 'http://example.com/2023/08/03/LLM%E9%87%8F%E5%8C%96%E4%B9%8BSmoothQuant/';
+                this.page.identifier = '2023/08/03/LLM量化之SmoothQuant/';
+            };
+            (function(){
+                var dsq = document.createElement('script');
+                dsq.type = 'text/javascript';
+                dsq.async = true;
+                dsq.src = '//' + 'cxj' + '.disqus.com/embed.js';
+                (document.head || document.body).appendChild(dsq);
+            })();
+        }
+    
+        var runningOnBrowser = typeof window !== "undefined";
+        var isBot = runningOnBrowser && !("onscroll" in window) || typeof navigator !== "undefined" && /(gle|ing|ro|msn)bot|crawl|spider|yand|duckgo/i.test(navigator.userAgent);
+        var supportsIntersectionObserver = runningOnBrowser && "IntersectionObserver" in window;
+    
+        setTimeout(function () {
+            if (!isBot && supportsIntersectionObserver) {
+                var comment_observer = new IntersectionObserver(function(entries) {
+                    if (entries[0].isIntersecting) {
+                        loadComment();
+                        comment_observer.disconnect();
+                    }
+                }, { threshold: [0] });
+                comment_observer.observe(document.getElementById('comment'));
+            } else {
+                loadComment();
+            }
+        }, 1);
+    </script>
+
+
+    
+
+    
+    
+
+    
+    
+    
+    
+    
+
+    
+    
+    
+    
+    
+
+    
+    
+    
+
+
+
+    <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+</body>
+</html>
