@@ -25,7 +25,7 @@
     <!-- meta -->
 
 
-<title>LLM量化之SmoothQuant | Welcome to Phi-C&#39;s Blog</title>
+<title>LLM量化之GPTQ | Welcome to Phi-C&#39;s Blog</title>
 
 
     <meta name="keywords" content="算法 大模型 量化">
@@ -35,21 +35,15 @@
 
     <!-- OpenGraph -->
  
-    <meta name="description" content="paper: 《SmoothQuant: Accurate and Efficient Post-Training Quantization for Large Language Models》repo: https:&#x2F;&#x2F;github.com&#x2F;mit-han-lab&#x2F;smoothquant  SmoothQuant is a training-free, accuracy-preserving,">
-<meta property="og:type" content="article">
-<meta property="og:title" content="LLM量化之SmoothQuant">
-<meta property="og:url" content="http://example.com/2023/08/03/LLM%E9%87%8F%E5%8C%96%E4%B9%8BSmoothQuant/index.html">
+    <meta property="og:type" content="article">
+<meta property="og:title" content="LLM量化之GPTQ">
+<meta property="og:url" content="http://example.com/2023/10/28/LLM%E9%87%8F%E5%8C%96%E4%B9%8BGPTQ/index.html">
 <meta property="og:site_name" content="Welcome to Phi-C&#39;s Blog">
-<meta property="og:description" content="paper: 《SmoothQuant: Accurate and Efficient Post-Training Quantization for Large Language Models》repo: https:&#x2F;&#x2F;github.com&#x2F;mit-han-lab&#x2F;smoothquant  SmoothQuant is a training-free, accuracy-preserving,">
 <meta property="og:locale" content="en_US">
-<meta property="og:image" content="https://raw.githubusercontent.com/Phi-C/ImageBed/master/uPic/Fs1q5i.png">
-<meta property="og:image" content="https://raw.githubusercontent.com/Phi-C/ImageBed/master/uPic/Lj729N.png">
-<meta property="og:image" content="https://raw.githubusercontent.com/Phi-C/ImageBed/master/uPic/vjlBZ4.png">
-<meta property="article:published_time" content="2023-08-03T03:23:39.000Z">
-<meta property="article:modified_time" content="2023-10-28T06:25:34.841Z">
+<meta property="article:published_time" content="2023-10-28T12:09:05.000Z">
+<meta property="article:modified_time" content="2023-10-28T12:11:04.009Z">
 <meta property="article:tag" content="算法 大模型 量化">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://raw.githubusercontent.com/Phi-C/ImageBed/master/uPic/Fs1q5i.png">
 
 
     
@@ -242,10 +236,10 @@ mjx-container[display="true"] + br {
 
 <div class="post-title">
     <h1 class="post-title__text">
-        LLM量化之SmoothQuant
+        LLM量化之GPTQ
     </h1>
     <div class="post-title__meta">
-        <a href="/archives/2023/08/" class="post-meta__date button">2023-08-03</a>
+        <a href="/archives/2023/10/" class="post-meta__date button">2023-10-28</a>
         
  
         
@@ -271,39 +265,7 @@ mjx-container[display="true"] + br {
 <article class="post content-card">
     <div class="post__header"></div>
     <div class="post__content">
-        <p>paper: <a target="_blank" rel="noopener" href="https://arxiv.org/abs/2211.10438">《SmoothQuant: Accurate and Efficient Post-Training Quantization for Large Language Models<br>》</a><br>repo: <a target="_blank" rel="noopener" href="https://github.com/mit-han-lab/smoothquant">https://github.com/mit-han-lab/smoothquant</a></p>
-<blockquote>
-<p>SmoothQuant is a training-free, accuracy-preserving, and general-purpose <strong>post-training quantization(PTQ)</strong> solution to enable <strong>8-bit weight, 8-bit activation(W8A8)</strong> quantization for LLMs.</p>
-</blockquote>
-<h1 id="1-动机"><a href="#1-动机" class="headerlink" title="1 动机"></a>1 动机</h1><p>许多实验表明, 对LLM进行量化，激活值会比权重更难量化，因为: LLM会出现系统性的离群点，这些离群点的值通常会比正常值大很多倍, 引入较大的量化误差。<br><img src="https://raw.githubusercontent.com/Phi-C/ImageBed/master/uPic/Fs1q5i.png" alt="Fs1q5i"><br>根据论文, LLM激活值和权重的分布具有如下特点：</p>
-<ul>
-<li>激活值的有些channel会出现系统性离群点, 这些离群点的值通常非常大</li>
-<li>这些离群点通常出现在某些特定的channel</li>
-<li>每个channel内的数值方差较小</li>
-<li>权重的分布相对均匀，即使有离群点, token维度的方差也不大(激活值在token维度的方差较大) [上图标明了token维度和channel维度]</li>
-</ul>
-<h1 id="2-方法"><a href="#2-方法" class="headerlink" title="2 方法"></a>2 方法</h1><h3 id="2-1-不同粒度的量化"><a href="#2-1-不同粒度的量化" class="headerlink" title="2.1 不同粒度的量化"></a>2.1 不同粒度的量化</h3><p><img src="https://raw.githubusercontent.com/Phi-C/ImageBed/master/uPic/Lj729N.png" alt="Lj729N"></p>
-<ul>
-<li>LLM中大多数激活值的shape可以表示为<code>[B, L, H*D]</code>, 所谓<code>per-token</code>对应着<code>L</code>所在的维度，<code>per-channel</code>对应着<code>H*D</code>的维度。</li>
-<li>上图(b)表示对激活值做<code>per-token</code>量化,对权重做<code>per-channel</code>量化, 它对应的数学表达式可以组织成如下形式<br>$$\mathbf{Y}=\operatorname{diag}\left(\boldsymbol{\Delta}<em>{\mathbf{X}}^{\mathrm{FP} 16}\right) \cdot\left(\overline{\mathbf{X}}^{\mathrm{INT} 8} \cdot \overline{\mathbf{W}}^{\mathrm{INT} 8}\right) \cdot \operatorname{diag}\left(\boldsymbol{\Delta}</em>{\mathbf{W}}^{\mathrm{FP} 16}\right)$$</li>
-<li>对激活值做<code>per-token</code>量化的效果只是略好于<code>per-tensor</code>量化(原因从动机一节也可以理解), 之所以没有直接做<code>per-chnnel</code>量化在于这一操作对硬件并不优化, 论文原文是这样描述的<blockquote>
-<p>However, per-channel activation quantization does not map well to hardware-accelerated GEMM kernels, that rely on a sequence of operations executed at a high throughput (e.g., Tensor Core MMAs) and do not tolerate the insertion of instructions with a lower throughput (e.g., conversions or CUDA Core FMAs) in that sequence.</p>
-</blockquote>
-</li>
-</ul>
-<h3 id="2-2-SmoothQuant的量化策略"><a href="#2-2-SmoothQuant的量化策略" class="headerlink" title="2.2 SmoothQuant的量化策略"></a>2.2 SmoothQuant的量化策略</h3><p>一句话概括SmoothQuant: 通过数学上的等价变换，完成了<code>outlier magnitute migration</code>。这样, 激活和权重的分布都相对flat, 从而可以使用<code>per-tensor</code>量化。<br><img src="https://raw.githubusercontent.com/Phi-C/ImageBed/master/uPic/vjlBZ4.png" alt="vjlBZ4"></p>
-<ul>
-<li>首先在Calibration Set上获取激活值的<code>per-cahnnel</code>最大值</li>
-<li>然后做权重变换</li>
-<li>最后在变换后的模型上过Calibration Set，确定量化的scale值</li>
-</ul>
-<h3 id="2-3-总结"><a href="#2-3-总结" class="headerlink" title="2.3 总结"></a>2.3 总结</h3><ul>
-<li>如果是原来<code>per-tensor</code>或者<code>per-token</code>的量化, 都是直接对激活值或权重量化</li>
-<li>在SmoothQuant方案中, 会先对权重进行<code>smooth变换</code>, 然后对变换后的权重进行量化</li>
-<li>migration strength <mjx-container class="MathJax" jax="SVG"><svg style="vertical-align: -0.025ex;" xmlns="http://www.w3.org/2000/svg" width="1.448ex" height="1.025ex" role="img" focusable="false" viewBox="0 -442 640 453"><g stroke="currentColor" fill="currentColor" stroke-width="0" transform="scale(1,-1)"><g data-mml-node="math"><g data-mml-node="mi"><path data-c="1D6FC" d="M34 156Q34 270 120 356T309 442Q379 442 421 402T478 304Q484 275 485 237V208Q534 282 560 374Q564 388 566 390T582 393Q603 393 603 385Q603 376 594 346T558 261T497 161L486 147L487 123Q489 67 495 47T514 26Q528 28 540 37T557 60Q559 67 562 68T577 70Q597 70 597 62Q597 56 591 43Q579 19 556 5T512 -10H505Q438 -10 414 62L411 69L400 61Q390 53 370 41T325 18T267 -2T203 -11Q124 -11 79 39T34 156ZM208 26Q257 26 306 47T379 90L403 112Q401 255 396 290Q382 405 304 405Q235 405 183 332Q156 292 139 224T121 120Q121 71 146 49T208 26Z"></path></g></g></g></svg></mjx-container>的选择和具体模型相关, 是一个超参数，若激活值的离群现象严重，应该选取更大的<mjx-container class="MathJax" jax="SVG"><svg style="vertical-align: -0.025ex;" xmlns="http://www.w3.org/2000/svg" width="1.448ex" height="1.025ex" role="img" focusable="false" viewBox="0 -442 640 453"><g stroke="currentColor" fill="currentColor" stroke-width="0" transform="scale(1,-1)"><g data-mml-node="math"><g data-mml-node="mi"><path data-c="1D6FC" d="M34 156Q34 270 120 356T309 442Q379 442 421 402T478 304Q484 275 485 237V208Q534 282 560 374Q564 388 566 390T582 393Q603 393 603 385Q603 376 594 346T558 261T497 161L486 147L487 123Q489 67 495 47T514 26Q528 28 540 37T557 60Q559 67 562 68T577 70Q597 70 597 62Q597 56 591 43Q579 19 556 5T512 -10H505Q438 -10 414 62L411 69L400 61Q390 53 370 41T325 18T267 -2T203 -11Q124 -11 79 39T34 156ZM208 26Q257 26 306 47T379 90L403 112Q401 255 396 290Q382 405 304 405Q235 405 183 332Q156 292 139 224T121 120Q121 71 146 49T208 26Z"></path></g></g></g></svg></mjx-container>值。</li>
-<li>对激活值的变换是一个运行时行为, 如果可以的话可以将激活值的变换转移到前一个算子(比如对QVK矩阵计算, 可以将激活值的变换转移到前面的layernomr算子), 对于无法转移的(比如GLU最后一个FC的输入激活值)则需要插入进行激活值变换的算子(一个乘法算子)</li>
-</ul>
-
+        
     </div>
      
     <div class="post-footer__meta"><p>updated at 2023-10-28</p></div> 
@@ -314,30 +276,16 @@ mjx-container[display="true"] + br {
     <div class="nav">
         <div class="nav__prev">
             
-                <a href="/2023/10/28/LLM%E9%87%8F%E5%8C%96%E4%B9%8BGPTQ/" class="nav__link">
-                    <div>
-                        <svg viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" width="24" height="24"><path d="M589.088 790.624L310.464 512l278.624-278.624 45.248 45.248L400.96 512l233.376 233.376z" fill="#808080"></path></svg>
-                    </div>
-                    <div>
-                        <div class="nav__label">
-                            Previous Post
-                        </div>
-                        <div class="nav__title">
-                            LLM量化之GPTQ
-                        </div>
-                    </div>
-                </a>
-            
         </div>
         <div class="nav__next">
             
-                <a href="/2023/07/28/%E6%9E%81%E7%AE%80%E5%87%B8%E4%BC%98%E5%8C%96%E4%B9%8B%E6%A0%87%E5%87%86%E5%BD%A2%E5%BC%8F/" class="nav__link">
+                <a href="/2023/08/03/LLM%E9%87%8F%E5%8C%96%E4%B9%8BSmoothQuant/" class="nav__link">
                     <div>
                         <div class="nav__label">
                             Next Post
                         </div>
                         <div class="nav__title">
-                            极简凸优化之标准形式
+                            LLM量化之SmoothQuant
                         </div>
                     </div>
                     <div>
@@ -502,8 +450,8 @@ mjx-container[display="true"] + br {
     <script>
         function loadComment() {
             window.disqus_config = function () {
-                this.page.url = 'http://example.com/2023/08/03/LLM%E9%87%8F%E5%8C%96%E4%B9%8BSmoothQuant/';
-                this.page.identifier = '2023/08/03/LLM量化之SmoothQuant/';
+                this.page.url = 'http://example.com/2023/10/28/LLM%E9%87%8F%E5%8C%96%E4%B9%8BGPTQ/';
+                this.page.identifier = '2023/10/28/LLM量化之GPTQ/';
             };
             (function(){
                 var dsq = document.createElement('script');
