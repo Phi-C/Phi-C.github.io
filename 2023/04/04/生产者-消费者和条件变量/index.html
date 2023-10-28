@@ -28,7 +28,7 @@
 <title>生产者-消费者和条件变量 | Welcome to Phi-C&#39;s Blog</title>
 
 
-    <meta name="keywords" content="CPP 操作系统 同步问题">
+    <meta name="keywords" content="CPP, 操作系统, 同步问题">
 
 
 
@@ -43,8 +43,10 @@
 <meta property="og:description" content="1 条件变量某个线程需要检查某个条件是否满足, 只有当条件满足时它才继续执行, 但是这个条件的状态与其它线程的执行相关。这是一种常见的场景, 通常有两种比较容易想到的方法去判断条件是否成立。  通过spin的方式轮询一个共享变量(缺点:效率低，浪费CPU时间) 使用条件变量: 条件不满足，进入睡眠状态; 条件满足, (被唤醒)继续执行   A condition variable is an ex">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2023-04-04T15:11:56.000Z">
-<meta property="article:modified_time" content="2023-04-15T06:38:56.361Z">
-<meta property="article:tag" content="CPP 操作系统 同步问题">
+<meta property="article:modified_time" content="2023-10-28T16:15:54.785Z">
+<meta property="article:tag" content="CPP">
+<meta property="article:tag" content="操作系统">
+<meta property="article:tag" content="同步问题">
 <meta name="twitter:card" content="summary_large_image">
 
 
@@ -187,8 +189,8 @@
 
     </div>
      
-    <div class="post-footer__meta"><p>updated at 2023-04-15</p></div> 
-    <div class="post-entry__tags"><a href="/tags/CPP-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-%E5%90%8C%E6%AD%A5%E9%97%AE%E9%A2%98/" class="post-tags__link button"># CPP 操作系统 同步问题</a></div> 
+    <div class="post-footer__meta"><p>updated at 2023-10-29</p></div> 
+    <div class="post-entry__tags"><a href="/tags/CPP/" class="post-tags__link button"># CPP</a><a href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" class="post-tags__link button"># 操作系统</a><a href="/tags/%E5%90%8C%E6%AD%A5%E9%97%AE%E9%A2%98/" class="post-tags__link button"># 同步问题</a></div> 
 </article>
 
 
@@ -388,20 +390,5 @@
 
 
 
-    <script type="text/x-mathjax-config">
-    MathJax.Hub.Config({
-        tex2jax: {
-            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
-            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
-            processEscapes: true
-        }
-    });
-    MathJax.Hub.Queue(function() {
-        var all = MathJax.Hub.getAllJax();
-        for (var i = 0; i < all.length; ++i)
-            all[i].SourceElement().parentNode.className += ' has-jax';
-    });
-</script>
-<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-</body>
+    </body>
 </html>
