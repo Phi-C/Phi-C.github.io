@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+    <meta charset="utf-8">
+
+    
+
+    <!-- 渲染优化 -->
+    <meta name="renderer" content="webkit">
+    <meta name="force-rendering" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta name="HandheldFriendly" content="True" >
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+    <!--icon-->
+
+    
+    
+    
+    
+    
+
+
+    <!-- meta -->
+
+
+<title>LLM之Llama模型 | Welcome to Phi-C&#39;s Blog</title>
+
+
+    <meta name="keywords" content="算法 大模型">
+
+
+
+
+    <!-- OpenGraph -->
+ 
+    <meta name="description" content="概览出于LLM基建需求, 最近以hugging face的Llama实现作为baseline, 通过调用基础算子对Llama进行了C++组网。在组网前, 阅读了一下Llama的论文和hugging face的组网逻辑(modelling_llama.py), 总结了Llama网络的几个主要特点:  和GLM类似, 也是使用了RoPE, 且实现和原始RoPE是一致的; 没有采用通常的Layer No">
+<meta property="og:type" content="article">
+<meta property="og:title" content="LLM之Llama模型">
+<meta property="og:url" content="http://example.com/2023/07/01/LLM%E4%B9%8BLlama%E6%A8%A1%E5%9E%8B/index.html">
+<meta property="og:site_name" content="Welcome to Phi-C&#39;s Blog">
+<meta property="og:description" content="概览出于LLM基建需求, 最近以hugging face的Llama实现作为baseline, 通过调用基础算子对Llama进行了C++组网。在组网前, 阅读了一下Llama的论文和hugging face的组网逻辑(modelling_llama.py), 总结了Llama网络的几个主要特点:  和GLM类似, 也是使用了RoPE, 且实现和原始RoPE是一致的; 没有采用通常的Layer No">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://raw.githubusercontent.com/Phi-C/ImageBed/master/uPic/TJ1EUs.png">
+<meta property="article:published_time" content="2023-07-01T04:08:23.000Z">
+<meta property="article:modified_time" content="2023-10-28T02:42:11.099Z">
+<meta property="article:tag" content="算法 大模型">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/Phi-C/ImageBed/master/uPic/TJ1EUs.png">
+
+
+    
+<link rel="stylesheet" href="/css/style/main.css">
+ 
+
+    
+    
+        <link rel="stylesheet" id="hl-default-theme" href="/css/highlight/default.css" media="none" onload="this.media='all'">
+        
+    
+
+    
+    
+
+    
+
+     
+    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+ 
+
+    <!-- custom head -->
+
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+    <body>
+        <div id="app" tabindex="-1">
+            <header class="header">
+    <div class="header__left">
+        <a href="/" class="button">
+            <span class="logo__text">XJ Chen&#39;s Blog</span>
+        </a>
+    </div>
+    <div class="header__right">
+        
+            <div class="navbar__menus">
+                
+                    <a href="/" class="navbar-menu button">首页</a>
+                
+                    <a href="/tags/" class="navbar-menu button">标签</a>
+                
+                    <a href="/archives/" class="navbar-menu button">归档</a>
+                
+                    <a href="/friends/" class="navbar-menu button">友链</a>
+                
+                    <a href="/page/" class="navbar-menu button">Page</a>
+                
+            </div>
+        
+        
+        
+
+        
+        
+
+        
+            <a class="dropdown-icon button" id="btn-dropdown" tabindex="0"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" width='24' height='24' fill="none" stroke="currentColor" stroke-width="0.7" stroke-linecap="round" stroke-linejoin="round"><path fill="currentColor" d="M3.314,4.8h13.372c0.41,0,0.743-0.333,0.743-0.743c0-0.41-0.333-0.743-0.743-0.743H3.314c-0.41,0-0.743,0.333-0.743,0.743C2.571,4.467,2.904,4.8,3.314,4.8z M16.686,15.2H3.314c-0.41,0-0.743,0.333-0.743,0.743s0.333,0.743,0.743,0.743h13.372c0.41,0,0.743-0.333,0.743-0.743S17.096,15.2,16.686,15.2z M16.686,9.257H3.314c-0.41,0-0.743,0.333-0.743,0.743s0.333,0.743,0.743,0.743h13.372c0.41,0,0.743-0.333,0.743-0.743S17.096,9.257,16.686,9.257z"></path></svg></a>
+            <div class="dropdown-menus" id="dropdown-menus">
+                
+                    <a href="/" class="dropdown-menu button">首页</a>
+                
+                    <a href="/tags/" class="dropdown-menu button">标签</a>
+                
+                    <a href="/archives/" class="dropdown-menu button">归档</a>
+                
+                    <a href="/friends/" class="dropdown-menu button">友链</a>
+                
+                    <a href="/page/" class="dropdown-menu button">Page</a>
+                
+            </div>
+        
+    </div>
+</header>
+
+
+            <main class="main">
+    
+
+<div class="post-title">
+    <h1 class="post-title__text">
+        LLM之Llama模型
+    </h1>
+    <div class="post-title__meta">
+        <a href="/archives/2023/07/" class="post-meta__date button">2023-07-01</a>
+        
+ 
+        
+    
+     
+    <span id="busuanzi_container_page_pv" hidden>
+        <span class="separate-dot"></span>
+        <span></span>
+        <span id="busuanzi_value_page_pv"></span>
+        <span>Views</span>
+    </span>
+
+
+
+ 
+
+ 
+    </div>
+</div>
+
+
+
+<article class="post content-card">
+    <div class="post__header"></div>
+    <div class="post__content">
+        <h2 id="概览"><a href="#概览" class="headerlink" title="概览"></a>概览</h2><p>出于LLM基建需求, 最近以hugging face的Llama实现作为baseline, 通过调用基础算子对Llama进行了C++组网。在组网前, 阅读了一下Llama的论文和hugging face的组网逻辑(modelling_llama.py), 总结了Llama网络的几个主要特点:</p>
+<ul>
+<li>和GLM类似, 也是使用了RoPE, 且实现和原始RoPE是一致的;</li>
+<li>没有采用通常的Layer Normalization, 而是使用RMSNorm;</li>
+<li>GLU单元实现不一样, 像GPT、GLM、BLOOM模型的GLU都是两个参数矩阵做FC, Llama的GLU单元有3个参数矩阵, 采用<code>Swish</code>激活函数;</li>
+<li>采用BPE(byte-pair encoding) Tokenizer方案</li>
+<li>Llama的模型参数重没有<code>bias</code>;<br>后面会具体介绍一下RMSNorm、GLU和BPE Tokenizer这三个feature。</li>
+</ul>
+<h2 id="RMSNorm"><a href="#RMSNorm" class="headerlink" title="RMSNorm"></a>RMSNorm</h2><p>paper: <a target="_blank" rel="noopener" href="https://arxiv.org/abs/1910.07467">《Root Mean Square Layer Normalization》</a><br>一般的layer normalization的计算可以表示成$y_{i} &#x3D;  \frac{x_{i} - \mu}{\delta} \times \alpha + \beta$。对于基于Transformer结构的LLM, normalization的输入一般都是shape为<code>[seq_len, batch_size, hidden_dim]</code>(hidden_dim &#x3D; size_per_head * head_num), 其中均值$\mu$和标准差$\delta$是在hidden_dim所在的维度计算出来的。<br>RMSNorm的计算略有不同, 可以表示成$y_{i} &#x3D; \frac{x_{i}}{x_{RMS}}\times\alpha + \beta$，其中$x_{RMS} &#x3D; \sqrt{\frac{x_1^2+…+x_n^2}{n}}$。和layer normalization一样, $x_{RMS}$也是在<code>hidden_dim</code>这个维度计算得到的。</p>
+<p>由于在搭建GLM网络时,layer normalization使用<code>float16</code>数据类型进行计算, 所以一开始RMSNorm也是用<code>float16</code>。后来发现虽然第一层的精度可以对齐, 但是经过多层block后, 精度偏差越来越大。仔细检查了一下, 发现由于$x_{RMS}$和$\delta$的计算方式不同, $x_{RMS}$可能会很大, 导致$\frac{x_i}{x_{RMS}}$为0, 使用<code>float</code>计算后精度可以完全对齐。</p>
+<h2 id="SwiGLU"><a href="#SwiGLU" class="headerlink" title="SwiGLU"></a>SwiGLU</h2><ul>
+<li>SiLU激活函数: $silu(x)&#x3D;x.sigmoid(x)$</li>
+<li>Swish激活函数: $swish(x)&#x3D;x.sigmoid(\beta x)$</li>
+</ul>
+<p>SiLU可以看成Swish的一个特例。<br>可以看看hugging face上对Llama的SwiGLU的实现, <code>self.act_fn</code>就是Swish激活函数</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">LlamaMLP</span>(nn.Module):</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params"></span></span><br><span class="line"><span class="params">        self,</span></span><br><span class="line"><span class="params">        hidden_size: <span class="built_in">int</span>,</span></span><br><span class="line"><span class="params">        intermediate_size: <span class="built_in">int</span>,</span></span><br><span class="line"><span class="params">        hidden_act: <span class="built_in">str</span>,</span></span><br><span class="line"><span class="params">    </span>):</span><br><span class="line">        <span class="built_in">super</span>().__init__()</span><br><span class="line">        self.gate_proj = nn.Linear(hidden_size, intermediate_size, bias=<span class="literal">False</span>)</span><br><span class="line">        self.down_proj = nn.Linear(intermediate_size, hidden_size, bias=<span class="literal">False</span>)</span><br><span class="line">        self.up_proj = nn.Linear(hidden_size, intermediate_size, bias=<span class="literal">False</span>)</span><br><span class="line">        self.act_fn = ACT2FN[hidden_act]</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">forward</span>(<span class="params">self, x</span>):</span><br><span class="line">        <span class="keyword">return</span> self.down_proj(self.act_fn(self.gate_proj(x)) * self.up_proj(x))</span><br></pre></td></tr></table></figure>
+<p>拓展阅读:</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://arxiv.org/abs/2002.05202">GLU Variants Improve Transformer
+</a></li>
+<li><a target="_blank" rel="noopener" href="https://arxiv.org/abs/1710.05941">Searching for Activation Functions
+</a></li>
+</ul>
+<h2 id="BPE"><a href="#BPE" class="headerlink" title="BPE"></a>BPE</h2><p>BPE最初是作为一种文本压缩算法,后来被很多的Transformer模型用作tokenization, 比如GPT系列、RoBERTa, BART, DeBERTa。</p>
+<p>tokenization(标记化)是将自然语言转换成模型可以处理的标记的过程。自然语言处理的基本对象可以分成3类：1）单词(word); 2）字符(character); 3）子词(subword)。这是一种介于单词和字符之间的处理粒度。BPE就是一种基于subword的处理方法, 还有其它一些subword tokenization方法, 比如WordPiece, Unigram, SentencePiece等。<br>BPE的一个典型例子可以查看<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Byte_pair_encoding">wiki</a>:</p>
+<p><img src="https://raw.githubusercontent.com/Phi-C/ImageBed/master/uPic/TJ1EUs.png" alt="TJ1EUs"></p>
+<p>具体到Llama, 论文里说使用的是Google的SentencePiece方法。感兴趣的可以了解一下WordPiece、Unigram和SentencePiece算法。</p>
+<p>拓展阅读:</p>
+<ul>
+<li><p>paper: <a target="_blank" rel="noopener" href="https://arxiv.org/abs/1808.06226">SentencePiece: A simple and language independent subword tokenizer and detokenizer for Neural Text Processing</a></p>
+</li>
+<li><p>repo: <a target="_blank" rel="noopener" href="https://github.com/google/sentencepiece">https://github.com/google/sentencepiece</a></p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://huggingface.co/learn/nlp-course/chapter6/5?fw=pt">https://huggingface.co/learn/nlp-course/chapter6/5?fw=pt</a></p>
+</li>
+</ul>
+
+    </div>
+     
+    <div class="post-footer__meta"><p>updated at 2023-10-28</p></div> 
+    <div class="post-entry__tags"><a href="/tags/%E7%AE%97%E6%B3%95-%E5%A4%A7%E6%A8%A1%E5%9E%8B/" class="post-tags__link button"># 算法 大模型</a></div> 
+</article>
+
+
+    <div class="nav">
+        <div class="nav__prev">
+            
+        </div>
+        <div class="nav__next">
+            
+                <a href="/2023/05/20/LLM%E4%B9%8BGLM%E6%A8%A1%E5%9E%8B/" class="nav__link">
+                    <div>
+                        <div class="nav__label">
+                            Next Post
+                        </div>
+                        <div class="nav__title">
+                            LLM之GLM模型
+                        </div>
+                    </div>
+                    <div>
+                        <svg viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" width="24" height="24"><path d="M434.944 790.624l-45.248-45.248L623.04 512l-233.376-233.376 45.248-45.248L713.568 512z" fill="#808080"></path></svg>
+                    </div>
+                </a>
+            
+        </div>
+    </div>
+
+
+
+    <div class="post__comments content-card" id="comment">
+        
+    <h4>Comments</h4>
+    
+    <div id="disqus_thread">Unable to load Disqus, please make sure your network can access.</div>
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+
+
+    </div>
+
+
+
+</main>
+
+            <footer class="footer">
+    
+    
+
+
+    
+    
+    
+        <span id="busuanzi_container_site_uv" hidden>
+            <span></span>
+            <span id="busuanzi_value_site_uv"></span>
+            <span>Viewers</span>
+            
+                <span>&amp;nbsp;&amp;nbsp;&amp;nbsp;|</span>
+            
+        </span>
+    
+    
+        <span id="busuanzi_container_site_pv" hidden>
+            <span></span>
+            <span id="busuanzi_value_site_pv"></span>
+            <span>Views</span>
+            
+        </span>
+    
+ 
+ 
+
+ 
+    
+        
+        <p class="footer-copyright">
+            Copyright © 2023 <a href="/">Welcome to Phi-C&#39;s Blog</a>
+        </p>
+    
+    
+    
+    <p>Powered by <a href="https://hexo.io" target="_blank">Hexo</a> | Theme - <a href="https://github.com/ChrAlpha/hexo-theme-cards" target="_blank">Cards</a></p>
+</footer>
+        </div>
+         
+
+ 
+
+ 
+
+ 
+
+ 
+
+
+
+ 
+
+
+
+ 
+
+
+    
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+
+    
+    <script>
+        function loadComment() {
+            window.disqus_config = function () {
+                this.page.url = 'http://example.com/2023/07/01/LLM%E4%B9%8BLlama%E6%A8%A1%E5%9E%8B/';
+                this.page.identifier = '2023/07/01/LLM之Llama模型/';
+            };
+            (function(){
+                var dsq = document.createElement('script');
+                dsq.type = 'text/javascript';
+                dsq.async = true;
+                dsq.src = '//' + 'cxj' + '.disqus.com/embed.js';
+                (document.head || document.body).appendChild(dsq);
+            })();
+        }
+    
+        var runningOnBrowser = typeof window !== "undefined";
+        var isBot = runningOnBrowser && !("onscroll" in window) || typeof navigator !== "undefined" && /(gle|ing|ro|msn)bot|crawl|spider|yand|duckgo/i.test(navigator.userAgent);
+        var supportsIntersectionObserver = runningOnBrowser && "IntersectionObserver" in window;
+    
+        setTimeout(function () {
+            if (!isBot && supportsIntersectionObserver) {
+                var comment_observer = new IntersectionObserver(function(entries) {
+                    if (entries[0].isIntersecting) {
+                        loadComment();
+                        comment_observer.disconnect();
+                    }
+                }, { threshold: [0] });
+                comment_observer.observe(document.getElementById('comment'));
+            } else {
+                loadComment();
+            }
+        }, 1);
+    </script>
+
+
+    
+
+    
+    
+
+    
+    
+    
+    
+    
+
+    
+    
+    
+    
+    
+
+    
+    
+    
+
+
+
+    <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+</body>
+</html>
