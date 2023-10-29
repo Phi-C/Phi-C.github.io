@@ -25,27 +25,29 @@
     <!-- meta -->
 
 
-<title>《零售的哲学》读书笔记 | Welcome to Phi-C&#39;s Blog</title>
+<title>Mixin介绍 | Welcome to Phi-C&#39;s Blog</title>
 
 
-    <meta name="keywords" content="读书笔记">
+    <meta name="keywords" content="程序设计">
 
 
 
 
     <!-- OpenGraph -->
  
-    <meta name="description" content="Notes 便利店和量贩式商店在经营策略上的差异。 P84  POS(Point of Sale)系统: 销售点终端。P109  2012年，日本自民党重掌政权，安倍晋三成为日本首相。P115  日本人口在1.2亿左右，在2020年，65岁以上的老龄人口已经接近30%了。同样是2020年，CN的65岁以上老龄人占比接近15%。   https:&#x2F;&#x2F;zh.wikipedia.org&#x2F;wiki&#x2F;日本人">
+    <meta name="description" content="起源: 最近在阅读TensorRT-LLM的源码, 里头有一个比较关键的类GenerationMixin。当时阅读到这里的时候有点奇怪，后缀Mixin表示什么意思？后来在阅读《程序员修炼之道——通向务实的最高境界》一书的继承税一节时，又遇到了Mixin这个关键词。于是做了一番调研，形成本文。 继承税一节提到三种技术，来尽可能避免继承:  接口与协议 委托 mixin与特征  什么是Mixin mi">
 <meta property="og:type" content="article">
-<meta property="og:title" content="《零售的哲学》读书笔记">
-<meta property="og:url" content="http://example.com/2023/03/30/%E3%80%8A%E9%9B%B6%E5%94%AE%E7%9A%84%E5%93%B2%E5%AD%A6%E3%80%8B%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/index.html">
+<meta property="og:title" content="Mixin介绍">
+<meta property="og:url" content="http://example.com/2023/10/29/Mixin%E4%BB%8B%E7%BB%8D/index.html">
 <meta property="og:site_name" content="Welcome to Phi-C&#39;s Blog">
-<meta property="og:description" content="Notes 便利店和量贩式商店在经营策略上的差异。 P84  POS(Point of Sale)系统: 销售点终端。P109  2012年，日本自民党重掌政权，安倍晋三成为日本首相。P115  日本人口在1.2亿左右，在2020年，65岁以上的老龄人口已经接近30%了。同样是2020年，CN的65岁以上老龄人占比接近15%。   https:&#x2F;&#x2F;zh.wikipedia.org&#x2F;wiki&#x2F;日本人">
+<meta property="og:description" content="起源: 最近在阅读TensorRT-LLM的源码, 里头有一个比较关键的类GenerationMixin。当时阅读到这里的时候有点奇怪，后缀Mixin表示什么意思？后来在阅读《程序员修炼之道——通向务实的最高境界》一书的继承税一节时，又遇到了Mixin这个关键词。于是做了一番调研，形成本文。 继承税一节提到三种技术，来尽可能避免继承:  接口与协议 委托 mixin与特征  什么是Mixin mi">
 <meta property="og:locale" content="en_US">
-<meta property="article:published_time" content="2023-03-30T00:57:41.000Z">
-<meta property="article:modified_time" content="2023-10-29T04:39:17.632Z">
-<meta property="article:tag" content="读书笔记">
+<meta property="og:image" content="https://raw.githubusercontent.com/Phi-C/ImageBed/master/uPic/c3yfzI.png">
+<meta property="article:published_time" content="2023-10-29T05:23:37.000Z">
+<meta property="article:modified_time" content="2023-10-29T12:31:22.720Z">
+<meta property="article:tag" content="程序设计">
 <meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/Phi-C/ImageBed/master/uPic/c3yfzI.png">
 
 
     
@@ -126,10 +128,10 @@
 
 <div class="post-title">
     <h1 class="post-title__text">
-        《零售的哲学》读书笔记
+        Mixin介绍
     </h1>
     <div class="post-title__meta">
-        <a href="/archives/2023/03/" class="post-meta__date button">2023-03-30</a>
+        <a href="/archives/2023/10/" class="post-meta__date button">2023-10-29</a>
         
  
         
@@ -155,75 +157,58 @@
 <article class="post content-card">
     <div class="post__header"></div>
     <div class="post__content">
-        <h2 id="Notes"><a href="#Notes" class="headerlink" title="Notes"></a>Notes</h2><ul>
-<li><p>便利店和量贩式商店在经营策略上的差异。 P84</p>
-</li>
-<li><p>POS(Point of Sale)系统: 销售点终端。P109</p>
-</li>
-<li><p>2012年，日本自民党重掌政权，安倍晋三成为日本首相。P115</p>
-</li>
-<li><p>日本人口在1.2亿左右，在2020年，65岁以上的老龄人口已经接近30%了。同样是2020年，CN的65岁以上老龄人占比接近15%。</p>
-<p>  <a target="_blank" rel="noopener" href="https://zh.wikipedia.org/wiki/%E6%97%A5%E6%9C%AC%E4%BA%BA%E5%8F%A3">https://zh.wikipedia.org/wiki/日本人口</a> <a target="_blank" rel="noopener" href="https://zh.wikipedia.org/wiki/%E4%B8%AD%E5%9B%BD%E5%A4%A7%E9%99%86%E4%BA%BA%E5%8F%A3">https://zh.wikipedia.org/wiki/中国大陆人口</a></p>
-</li>
+        <p>起源: 最近在阅读<code>TensorRT-LLM</code>的源码, 里头有一个比较关键的类<code>GenerationMixin</code>。当时阅读到这里的时候有点奇怪，后缀<code>Mixin</code>表示什么意思？后来在阅读《程序员修炼之道——通向务实的最高境界》一书的<code>继承税</code>一节时，又遇到了<code>Mixin</code>这个关键词。于是做了一番调研，形成本文。<br><img src="https://raw.githubusercontent.com/Phi-C/ImageBed/master/uPic/c3yfzI.png" alt="c3yfzI"></p>
+<p><code>继承税</code>一节提到三种技术，来尽可能避免<code>继承</code>:</p>
+<ul>
+<li>接口与协议</li>
+<li>委托</li>
+<li>mixin与特征</li>
 </ul>
-<h2 id="Key-takeaways"><a href="#Key-takeaways" class="headerlink" title="Key takeaways"></a>Key takeaways</h2><ul>
-<li>为了得到灵感和创意，铃木敏文平时就坚持做两件事情<ul>
-<li>把自己“<strong>置身于信息之中</strong>”, 比如回到家就打开电视，坐车就听广播。虽然对这些信息不必做到过目不忘，但是只要保持“<strong>问题意识</strong>”，总能捕捉到一些有效信息。</li>
-<li><strong>在众人面前演讲</strong>，通过这个过程可以<strong>整理思维</strong>，使想法系统化，在这个过程可以获得一些启发创意的源泉。</li>
-</ul>
-</li>
-<li>铃木敏文非常注重<strong>读懂消费者心理</strong>，从<strong>买方角度</strong>而非卖方角度考虑问题。</li>
-<li>铃木敏文总结了3点7-11能够保持稳步成长的原因<ul>
-<li>积极应对社会和时代的<strong>变化</strong></li>
-<li>全体员工时刻保持<strong>发现问题的意识</strong></li>
-<li>坚持“<strong>假设-执行-验证</strong>”的工作流程</li>
-</ul>
-</li>
-</ul>
-<h2 id="Quotes"><a href="#Quotes" class="headerlink" title="Quotes"></a>Quotes</h2><blockquote>
-<p>但在少子老龄化的时代，“量大”对大多数人而言并没有吸引力。随着单身人士和二人小家庭的增加，希望量少而价优，或者比起价格更期待高品质的人变得越来越多。所以在设定价格前，必须首先读懂消费者的心理。P118</p>
+<h1 id="什么是Mixin"><a href="#什么是Mixin" class="headerlink" title="什么是Mixin"></a>什么是Mixin</h1><blockquote>
+<p>mixin的思想很简单: 希望能够为类和对象提供扩展新的功能，但不用继承。       ——《程序员修炼之道》</p>
 </blockquote>
+<ul>
+<li>上面的<code>继承</code>不是指形式上的继承, 而是继承的语义<code>is-a</code>关系。从下面的例子不难发现, mixin实际上使用了<code>继承</code>的形式, 但使用者和mixin不是<code>is-a</code>的关系，而是<code>-able</code>关系。</li>
+</ul>
 <blockquote>
-<p>考虑到老龄化和少子化问题日益严重的社会中，没精力或没能力去太远地方购物的人可能会越来越多。P127</p>
+<p>Mixin是面向对象程序设计语言中的类，提供了方法的实现。其他类可以访问mixin类的方法而不必成为其子类。Mixin有时被称作”included”而不是”inherited”。<strong>mixin为使用它的class提供额外的功能，但自身却不单独使用</strong>（不能单独生成实例对象，属于抽象类）。因为有以上限制，<strong>Mixin类通常作为功能模块使用，在需要该功能时“混入”</strong>，而且不会使类的关系变得复杂。<strong>使用者与Mixin不是“is-a”的关系，而是“-able”关系</strong>。<br>Mixin有利于代码复用又避免了多继承的复杂。使用Mixin享有单一继承的单纯性和多重继承的共有性。接口与mixin相同的地方是都可以多继承，不同的地方在于mixin是带实现的。Mixin也可以看作是带实现的interface。这种设计模式实现了依赖反转原则。  ——Wikipedia</p>
 </blockquote>
-<blockquote>
-<p>面对少子老龄化的社会问题，日本企业逐渐把经营放眼与海外的巨大市场，接连走出了国门.(海外战略)。P183</p>
-</blockquote>
+<ul>
+<li>多重继承会有<code>diamond dependency problem</code>，举个例子：假如<code>B</code>和<code>C</code>继承自<code>A</code>，<code>D</code>多重继承自<code>B</code>和<code>C</code>，如果<code>B</code>和<code>C</code>都override了<code>A</code>中的<code>proc</code>方法，但是<code>D</code>没有override这一方法, 那么<code>D</code>应该使用哪个<code>proc</code>方法呢？</li>
+<li>单继承在继承层数较多的情况, 很难确定哪个父类定义了这个方法</li>
+<li>使用Minxin，可以避免上述<code>single-inheritance class fragmentation</code>和<code>mulitple-inheritance diamond dependency</code></li>
+</ul>
+<h1 id="Python中的Mixin"><a href="#Python中的Mixin" class="headerlink" title="Python中的Mixin"></a>Python中的Mixin</h1><p>就以上图为例, <code>GenerationMixin</code>定义了两个函数:</p>
+<ul>
+<li>get_transformer_layers</li>
+<li>prepare_basic_inputs</li>
+</ul>
+<p>然后每个特定模型的<code>XXXForCausalLM</code>,模型会继承(形式上)两个类, 分别是对应的<code>XXXModel</code>和<code>GenerationMixin</code>。单实际上具有继承语义的只是<code>XXXModel</code>, <code>GenerationMixin</code>只是给这个类拓展额外的功能.</p>
+<h1 id="C-中的Mixin"><a href="#C-中的Mixin" class="headerlink" title="C++中的Mixin"></a>C++中的Mixin</h1><p>拓展阅读1的文章介绍得很详细, 可以直接参考.</p>
+<h1 id="拓展阅读"><a href="#拓展阅读" class="headerlink" title="拓展阅读"></a>拓展阅读</h1><p>1 <a target="_blank" rel="noopener" href="https://fuzhe1989.github.io/2018/04/21/mixin/">通过mixin组合功能
+</a><br>2 <a target="_blank" rel="noopener" href="https://www.residentmar.io/2019/07/07/python-mixins.html">Making Python classes more modular using mixins
+</a></p>
 
     </div>
      
     <div class="post-footer__meta"><p>updated at 2023-10-29</p></div> 
-    <div class="post-entry__tags"><a href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" class="post-tags__link button"># 读书笔记</a></div> 
+    <div class="post-entry__tags"><a href="/tags/%E7%A8%8B%E5%BA%8F%E8%AE%BE%E8%AE%A1/" class="post-tags__link button"># 程序设计</a></div> 
 </article>
 
 
     <div class="nav">
         <div class="nav__prev">
             
-                <a href="/2023/03/30/ONNX%E6%A8%A1%E5%9E%8B%E9%87%8F%E5%8C%96/" class="nav__link">
-                    <div>
-                        <svg viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" width="24" height="24"><path d="M589.088 790.624L310.464 512l278.624-278.624 45.248 45.248L400.96 512l233.376 233.376z" fill="#808080"></path></svg>
-                    </div>
-                    <div>
-                        <div class="nav__label">
-                            Previous Post
-                        </div>
-                        <div class="nav__title">
-                            ONNX模型量化
-                        </div>
-                    </div>
-                </a>
-            
         </div>
         <div class="nav__next">
             
-                <a href="/2023/03/28/Type-traits-SFINAE%E5%92%8C%E7%BC%96%E8%AF%91%E6%97%B6%E5%8F%8D%E5%B0%84/" class="nav__link">
+                <a href="/2023/10/28/LLM%E9%87%8F%E5%8C%96%E4%B9%8BGPTQ/" class="nav__link">
                     <div>
                         <div class="nav__label">
                             Next Post
                         </div>
                         <div class="nav__title">
-                            Type traits,SFINAE和编译时反射
+                            LLM量化之GPTQ
                         </div>
                     </div>
                     <div>
@@ -338,8 +323,8 @@
     <script>
         function loadComment() {
             window.disqus_config = function () {
-                this.page.url = 'http://example.com/2023/03/30/%E3%80%8A%E9%9B%B6%E5%94%AE%E7%9A%84%E5%93%B2%E5%AD%A6%E3%80%8B%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/';
-                this.page.identifier = '2023/03/30/《零售的哲学》读书笔记/';
+                this.page.url = 'http://example.com/2023/10/29/Mixin%E4%BB%8B%E7%BB%8D/';
+                this.page.identifier = '2023/10/29/Mixin介绍/';
             };
             (function(){
                 var dsq = document.createElement('script');
