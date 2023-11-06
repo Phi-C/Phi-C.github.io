@@ -35,17 +35,27 @@
 
     <!-- OpenGraph -->
  
-    <meta name="description" content="1 信号量Q: 什么是信号量？信号量是一种条件变量的特例。 互斥锁是信号量的特例。 Q: 信号量适合解决什么问题？ 用信号量来解决生产者-消费者问题 1234567891011void producer() &amp;#123;    P(&amp;producer_bag);    print(&quot;(&quot;);    V(&amp;consumer_bag);&amp;#125;void cons">
+    <meta name="description" content="1 信号量Q: What’s semaphore？A: Semaphore is a single primitive for all things related to synchronization, and one can use semaphores as both locks and condition variables. To be specific, a semaphore is">
 <meta property="og:type" content="article">
 <meta property="og:title" content="哲学家吃饭问题和信号量">
 <meta property="og:url" content="https://phi-c.github.io/2023/04/15/%E5%93%B2%E5%AD%A6%E5%AE%B6%E5%90%83%E9%A5%AD%E9%97%AE%E9%A2%98%E5%92%8C%E4%BF%A1%E5%8F%B7%E9%87%8F/index.html">
 <meta property="og:site_name" content="Welcome to Phi-C&#39;s Blog">
-<meta property="og:description" content="1 信号量Q: 什么是信号量？信号量是一种条件变量的特例。 互斥锁是信号量的特例。 Q: 信号量适合解决什么问题？ 用信号量来解决生产者-消费者问题 1234567891011void producer() &amp;#123;    P(&amp;producer_bag);    print(&quot;(&quot;);    V(&amp;consumer_bag);&amp;#125;void cons">
+<meta property="og:description" content="1 信号量Q: What’s semaphore？A: Semaphore is a single primitive for all things related to synchronization, and one can use semaphores as both locks and condition variables. To be specific, a semaphore is">
 <meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://raw.githubusercontent.com/Phi-C/ImageBed/master/uPic/6LeQdr.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/Phi-C/ImageBed/master/uPic/vqJMEo.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/Phi-C/ImageBed/master/uPic/s5reTm.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/Phi-C/ImageBed/master/uPic/G8l0ny.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/Phi-C/ImageBed/master/uPic/luvdeg.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/Phi-C/ImageBed/master/uPic/GFSE9F.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/Phi-C/ImageBed/master/uPic/kAsoQn.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/Phi-C/ImageBed/master/uPic/tRUpCR.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/Phi-C/ImageBed/master/uPic/OdyoVU.png">
 <meta property="article:published_time" content="2023-04-15T06:36:14.000Z">
-<meta property="article:modified_time" content="2023-10-28T16:13:39.485Z">
+<meta property="article:modified_time" content="2023-11-06T12:32:50.239Z">
 <meta property="article:tag" content="操作系统">
 <meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/Phi-C/ImageBed/master/uPic/6LeQdr.png">
 
 
     
@@ -155,16 +165,34 @@
 <article class="post content-card">
     <div class="post__header"></div>
     <div class="post__content">
-        <h1 id="1-信号量"><a href="#1-信号量" class="headerlink" title="1 信号量"></a>1 信号量</h1><p>Q: 什么是信号量？<br>信号量是一种条件变量的特例。</p>
+        <h1 id="1-信号量"><a href="#1-信号量" class="headerlink" title="1 信号量"></a>1 信号量</h1><p>Q: What’s semaphore？<br>A: Semaphore is a single primitive for all things related to <code>synchronization</code>, and one can use <code>semaphores</code> as both <code>locks</code> and <code>condition variables</code>. To be specific, a semaphore is an boject with an integer value that we can manipulate with two routines (in POSIX standard, these routines are <code>sem_wait()</code> and <code>sem_post()</code>)</p>
+<p><img src="https://raw.githubusercontent.com/Phi-C/ImageBed/master/uPic/6LeQdr.png" alt="6LeQdr"></p>
 <p>互斥锁是信号量的特例。</p>
-<p>Q: 信号量适合解决什么问题？</p>
-<p>用信号量来解决生产者-消费者问题</p>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">producer</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="built_in">P</span>(&amp;producer_bag);</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;(&quot;</span>);</span><br><span class="line">    <span class="built_in">V</span>(&amp;consumer_bag);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">consumer</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="built_in">P</span>(&amp;consumer_bag);</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;)&quot;</span>);</span><br><span class="line">    <span class="built_in">V</span>(&amp;producer_bag);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>Q: How to use semaphore to solve producer-consumer problem?<br>A:</p>
+<ul>
+<li>Consider what the <code>unit source</code> (like a ball in the above picture) stands for? </li>
+<li>Producer&#x2F;consumer &#x3D; put a ball from one bag to another bag.<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">producer</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="built_in">P</span>(&amp;producer_bag);</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;(&quot;</span>);</span><br><span class="line">    <span class="built_in">V</span>(&amp;consumer_bag);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">consumer</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="built_in">P</span>(&amp;consumer_bag);</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;)&quot;</span>);</span><br><span class="line">    <span class="built_in">V</span>(&amp;producer_bag);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ul>
+<p>Q: It seems that we can write elegant codes for synchronization problems with <code>semaphore</code>. But in practice, in which situation we may prefer <code>semaphore</code> to other tools like <code>lock</code> and <code>condition variable</code>.<br>A:<br><img src="https://raw.githubusercontent.com/Phi-C/ImageBed/master/uPic/vqJMEo.png" alt="vqJMEo"><br><img src="https://raw.githubusercontent.com/Phi-C/ImageBed/master/uPic/s5reTm.png" alt="s5reTm"><br>For below picture, we use one semaphore, and order is not considered, but we can get the finished time for each thread.<br><img src="https://raw.githubusercontent.com/Phi-C/ImageBed/master/uPic/G8l0ny.png" alt="G8l0ny"><br>But for this picture, we use several semaphore, and we can control the order.<br><img src="https://raw.githubusercontent.com/Phi-C/ImageBed/master/uPic/luvdeg.png" alt="luvdeg"></p>
+<p>TODO: search more infomation.<br>Q: 理解信号量和条件变量的关系。<br>A: <code>semaphore</code>可以被视为<code>locks</code>的generalization，但细究起来并不是<code>conditional variable</code>的generalization. <code>condition variable</code>才刻画了同步的本质.</p>
+<h1 id="2-哲学家吃饭问题"><a href="#2-哲学家吃饭问题" class="headerlink" title="2 哲学家吃饭问题"></a>2 哲学家吃饭问题</h1><h2 id="2-1-问题描述"><a href="#2-1-问题描述" class="headerlink" title="2.1 问题描述"></a>2.1 问题描述</h2><p>哲学家吃饭是一个很有代表性的<code>同步</code>问题, 其描述如下: 有5个哲学家围绕一个圆桌吃饭, 每个人左右手边都有一个叉子(如下图所示), 只有同时拿到左右手的叉子时才能进食。请问应该如何设计才能保证每个哲学家都可以正常吃到食物。<br><img src="https://raw.githubusercontent.com/Phi-C/ImageBed/master/uPic/GFSE9F.png" alt="GFSE9F"></p>
+<h2 id="2-2-使用条件变量的解法"><a href="#2-2-使用条件变量的解法" class="headerlink" title="2.2 使用条件变量的解法"></a>2.2 使用条件变量的解法</h2><p>遇上任何同步问题，都可以考虑用<code>条件变量</code>去解决，只要能够正确地把条件表达出来。下面这个方法就是用条件变量来处理</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">define</span> CAN_EAT (avail[lhs] &amp;&amp; avil[rhs])</span></span><br><span class="line"><span class="comment">/* get_forks() implementaiton */</span></span><br><span class="line">mutex_lock(&amp;mutex);</span><br><span class="line"><span class="keyword">while</span> (!CAN_EAT)</span><br><span class="line">    <span class="comment">// 如果不满足条件, 在sleep前会释放锁</span></span><br><span class="line">    <span class="comment">// 当接受到signal, 在被唤醒(wake up)前会重新获得锁</span></span><br><span class="line">    cond_wait(&amp;cv, &amp;mutex);</span><br><span class="line">avail[lhs] = avail[rhs] = <span class="literal">false</span>;</span><br><span class="line">mutex_unlock(&amp;mutex);</span><br><span class="line"><span class="comment">// ... eat for some while ...</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/* put_forks() implementation */</span></span><br><span class="line">mutex_lock(&amp;mutex);</span><br><span class="line">avail[lhs] = avail[rhs] = <span class="literal">true</span>;</span><br><span class="line">cond_broadcast(&amp;cv);</span><br><span class="line">mutex_unlock(&amp;mutex);</span><br></pre></td></tr></table></figure>
+<p>但是条件变量会带来一个问题, 它会broadcast，但是线程多的时候会带来性能问题.</p>
+<h2 id="2-3-使用信号量的解法"><a href="#2-3-使用信号量的解法" class="headerlink" title="2.3 使用信号量的解法"></a>2.3 使用信号量的解法</h2><p>一种简单但是不正确的方法: 将信号量当互斥锁来解决。这种方法会产生死锁（所有人都拿起了左边的叉子时）。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* get_forks() implementaiton */</span></span><br><span class="line"><span class="type">void</span> <span class="title function_">get_forks</span><span class="params">(<span class="type">int</span> p)</span> &#123;</span><br><span class="line">    <span class="comment">// left[p]表示第p个哲学家左边叉子的编号</span></span><br><span class="line">    <span class="comment">// ref: Three easy pieces</span></span><br><span class="line">    sem_wait(&amp;forks[left[p]]);</span><br><span class="line">    sem_wait(&amp;forks[right[p]]);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/* put_forks() implementation */</span></span><br><span class="line"><span class="type">void</span> <span class="title function_">put_forks</span><span class="params">(<span class="type">int</span> p)</span> &#123;</span><br><span class="line">    sem_post(&amp;forks[left[p]]);</span><br><span class="line">    sem_post(&amp;forks[right[p]]);</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
 
-<h1 id="2-哲学家吃饭问题"><a href="#2-哲学家吃饭问题" class="headerlink" title="2 哲学家吃饭问题"></a>2 哲学家吃饭问题</h1>
+<p>正确的方法<br><img src="https://raw.githubusercontent.com/Phi-C/ImageBed/master/uPic/kAsoQn.png" alt="kAsoQn"></p>
+<ul>
+<li>方法1: 任何时候保证至多4个人(可以4个人&#x2F;3个人&#x2F;2个人&#x2F;1个人)可以上桌吃饭。(semaphore的初始值) </li>
+<li>方法2: 让1个人先拿起右边的叉子, 再拿起左边的叉子</li>
+</ul>
+<h2 id="2-4-反思"><a href="#2-4-反思" class="headerlink" title="2.4 反思"></a>2.4 反思</h2><p><img src="https://raw.githubusercontent.com/Phi-C/ImageBed/master/uPic/tRUpCR.png" alt="tRUpCR"><br><img src="https://raw.githubusercontent.com/Phi-C/ImageBed/master/uPic/OdyoVU.png" alt="OdyoVU"></p>
+<h1 id="3-参考资料"><a href="#3-参考资料" class="headerlink" title="3 参考资料"></a>3 参考资料</h1><p>1 <a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1xX4y1d7v2/?spm_id_from=333.999.0.0&vd_source=43bdc928b5bd775fe71fffe5fb9b9339">信号量和哲学家吃饭问题</a><br>2 《OS: Three easy pieces》Chapter 31</p>
+
     </div>
      
-    <div class="post-footer__meta"><p>updated at 2023-10-29</p></div> 
+    <div class="post-footer__meta"><p>updated at 2023-11-06</p></div> 
     <div class="post-entry__tags"><a href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" class="post-tags__link button"># 操作系统</a></div> 
 </article>
 
