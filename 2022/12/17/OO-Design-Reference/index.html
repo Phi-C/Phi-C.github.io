@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+    <meta charset="utf-8">
+
+    
+
+    <!-- 渲染优化 -->
+    <meta name="renderer" content="webkit">
+    <meta name="force-rendering" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta name="HandheldFriendly" content="True" >
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+    <!--icon-->
+
+    
+    
+    
+    
+    
+
+
+    <!-- meta -->
+
+
+<title>OO Design Reference | Welcome to Phi-C&#39;s Blog</title>
+
+
+    <meta name="keywords" content="CPP">
+
+
+
+
+    <!-- OpenGraph -->
+ 
+    <meta name="description" content="1 Design Guidelines1.1 Hightest Level Separate conderns (SRP) Design for Readability Design for Change and Extension (OCP, DRY) Design for Testability  Design pattern principles  SRP(Single-Responsibi">
+<meta property="og:type" content="article">
+<meta property="og:title" content="OO Design Reference">
+<meta property="og:url" content="https://phi-c.github.io/2022/12/17/OO-Design-Reference/index.html">
+<meta property="og:site_name" content="Welcome to Phi-C&#39;s Blog">
+<meta property="og:description" content="1 Design Guidelines1.1 Hightest Level Separate conderns (SRP) Design for Readability Design for Change and Extension (OCP, DRY) Design for Testability  Design pattern principles  SRP(Single-Responsibi">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://raw.githubusercontent.com/Phi-C/ImageBed/master/uPic/qyqvbU.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/Phi-C/ImageBed/master/uPic/Y97Ymd.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/Phi-C/ImageBed/master/uPic/an9hCo.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/Phi-C/ImageBed/master/uPic/hmY9Hp.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/Phi-C/ImageBed/master/uPic/9GYcMN.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/Phi-C/ImageBed/master/uPic/o2MdFh.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/Phi-C/ImageBed/master/uPic/noidoL.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/Phi-C/ImageBed/master/uPic/bGaDHJ.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/Phi-C/ImageBed/master/uPic/8G2T6n.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/Phi-C/ImageBed/master/uPic/rkPTtF.png">
+<meta property="article:published_time" content="2022-12-17T12:57:43.000Z">
+<meta property="article:modified_time" content="2023-11-11T12:16:34.099Z">
+<meta property="article:tag" content="CPP">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/Phi-C/ImageBed/master/uPic/qyqvbU.png">
+
+
+    
+<link rel="stylesheet" href="/css/style/main.css">
+ 
+
+    
+    
+        <link rel="stylesheet" id="hl-default-theme" href="/css/highlight/default.css" media="none" onload="this.media='all'">
+        
+    
+
+    
+    
+
+    
+
+     
+    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+ 
+
+    <!-- custom head -->
+
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+    <body>
+        <div id="app" tabindex="-1">
+            <header class="header">
+    <div class="header__left">
+        <a href="/" class="button">
+            <span class="logo__text">XJ Chen&#39;s Blog</span>
+        </a>
+    </div>
+    <div class="header__right">
+        
+            <div class="navbar__menus">
+                
+                    <a href="/" class="navbar-menu button">首页</a>
+                
+                    <a href="/tags/" class="navbar-menu button">标签</a>
+                
+                    <a href="/archives/" class="navbar-menu button">归档</a>
+                
+                    <a href="/friends/" class="navbar-menu button">友链</a>
+                
+                    <a href="/page/" class="navbar-menu button">Page</a>
+                
+            </div>
+        
+        
+        
+
+        
+        
+
+        
+            <a class="dropdown-icon button" id="btn-dropdown" tabindex="0"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" width='24' height='24' fill="none" stroke="currentColor" stroke-width="0.7" stroke-linecap="round" stroke-linejoin="round"><path fill="currentColor" d="M3.314,4.8h13.372c0.41,0,0.743-0.333,0.743-0.743c0-0.41-0.333-0.743-0.743-0.743H3.314c-0.41,0-0.743,0.333-0.743,0.743C2.571,4.467,2.904,4.8,3.314,4.8z M16.686,15.2H3.314c-0.41,0-0.743,0.333-0.743,0.743s0.333,0.743,0.743,0.743h13.372c0.41,0,0.743-0.333,0.743-0.743S17.096,15.2,16.686,15.2z M16.686,9.257H3.314c-0.41,0-0.743,0.333-0.743,0.743s0.333,0.743,0.743,0.743h13.372c0.41,0,0.743-0.333,0.743-0.743S17.096,9.257,16.686,9.257z"></path></svg></a>
+            <div class="dropdown-menus" id="dropdown-menus">
+                
+                    <a href="/" class="dropdown-menu button">首页</a>
+                
+                    <a href="/tags/" class="dropdown-menu button">标签</a>
+                
+                    <a href="/archives/" class="dropdown-menu button">归档</a>
+                
+                    <a href="/friends/" class="dropdown-menu button">友链</a>
+                
+                    <a href="/page/" class="dropdown-menu button">Page</a>
+                
+            </div>
+        
+    </div>
+</header>
+
+
+            <main class="main">
+    
+
+<div class="post-title">
+    <h1 class="post-title__text">
+        OO Design Reference
+    </h1>
+    <div class="post-title__meta">
+        <a href="/archives/2022/12/" class="post-meta__date button">2022-12-17</a>
+        
+ 
+        
+    
+     
+    <span id="busuanzi_container_page_pv" hidden>
+        <span class="separate-dot"></span>
+        <span></span>
+        <span id="busuanzi_value_page_pv"></span>
+        <span>Views</span>
+    </span>
+
+
+
+ 
+
+ 
+    </div>
+</div>
+
+
+
+<article class="post content-card">
+    <div class="post__header"></div>
+    <div class="post__content">
+        <h1 id="1-Design-Guidelines"><a href="#1-Design-Guidelines" class="headerlink" title="1 Design Guidelines"></a>1 Design Guidelines</h1><h2 id="1-1-Hightest-Level"><a href="#1-1-Hightest-Level" class="headerlink" title="1.1 Hightest Level"></a>1.1 Hightest Level</h2><ul>
+<li>Separate conderns (SRP)</li>
+<li>Design for Readability</li>
+<li>Design for Change and Extension (OCP, DRY)</li>
+<li>Design for Testability</li>
+</ul>
+<p>Design pattern principles</p>
+<ul>
+<li>SRP(Single-Responsibility Principle)</li>
+<li>OCP(Open-Closed Principle: Open for extension and closed for modification)</li>
+<li>DRY(Don’t Repeat Yourself)</li>
+<li>LSP(Liskov Substitution Principle)</li>
+<li>DIP(Dependence Inversion Principle): abstraction should not rely on details, detailes should rely on abstraction</li>
+</ul>
+<h2 id="1-2-Concrete-Level"><a href="#1-2-Concrete-Level" class="headerlink" title="1.2 Concrete Level"></a>1.2 Concrete Level</h2><ul>
+<li>Be careful when using inheritance</li>
+<li>Resist the urge to put everything into one class. Seperate concerns<blockquote>
+<p>Inheritance is rarely the answer. Delegate to Services: Has-A Trumps Is-A” ——(Andrew Hunt, David Thomas, The Progmatic Programmer)</p>
+</blockquote>
+</li>
+</ul>
+<h1 id="2-Implementation-Guidelines"><a href="#2-Implementation-Guidelines" class="headerlink" title="2 Implementation Guidelines"></a>2 Implementation Guidelines</h1><h2 id="2-1-basic-guidelines"><a href="#2-1-basic-guidelines" class="headerlink" title="2.1 basic guidelines"></a>2.1 basic guidelines</h2><ul>
+<li>By default, declare single-argument constructors explicit</li>
+<li>Consider the alignment of data members when adding member data to a struct or class.</li>
+<li>Define and initialize memver variables in the order of member declaration.</li>
+<li>By default, make member functions const (Remember: Const correctness is part of the semantics of your class)</li>
+<li>Don’t make data members const or references (Remember: A class with const or reference data member cannot be copy&#x2F;move assigned by default)<br>Eample: suppose you have the following class, it declares no copy operations, no move operations and no destructor, compiler will automatically generate these functionos if they are used<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">StringTable</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="built_in">StringTable</span>() &#123;&#125;</span><br><span class="line">    ...         <span class="comment">// functions for insertion, erasure, loookup, etc. but no copy/move/dtor functionality</span></span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">    std::map&lt;<span class="type">int</span>, std::string&gt; values;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+But sometime later, it’s decided that logging the default ctor and dtorof such objects would be useful<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">StringTable</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="built_in">StringTable</span>() &#123;</span><br><span class="line">        <span class="built_in">makeLogEntry</span>(<span class="string">&quot;Creating StringTable object&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    ~<span class="built_in">StringTable</span>() &#123;</span><br><span class="line">        <span class="built_in">makeLogEntry</span>(<span class="string">&quot;Deleting StringTable object&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">    std::map&lt;<span class="type">int</span>, std::string&gt; values;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+The above implementation would make code “moving” StringTable object actually copies them, which would introduce significant performance problem. But if we use <code>= default</code>, this problem can be avoided.</li>
+</ul>
+<h2 id="2-2-special-member-function-guidelines"><a href="#2-2-special-member-function-guidelines" class="headerlink" title="2.2 special member function guidelines"></a>2.2 special member function guidelines</h2><ul>
+<li>The two copy operations are independent: declaring one does not prevent compilers from generating the other</li>
+<li>The two move operations are not independent. If you declare either,, that prevents compilers from generating the other</li>
+<li>If compiler s are willing to generate the desired special function and the generated one would behave as you want, you may choose to adopt a policy of declaring it yourself and using <code>= default</code> for their definiton. [good habit, make code more  readable and avoid potential side effect]</li>
+</ul>
+<h3 id="2-2-1-Overall-guidelines"><a href="#2-2-1-Overall-guidelines" class="headerlink" title="2.2.1 Overall guidelines"></a>2.2.1 Overall guidelines</h3><h4 id="The-Rule-of-0"><a href="#The-Rule-of-0" class="headerlink" title="The Rule of 0"></a>The Rule of 0</h4><ul>
+<li>If you can avoid defining default operations, do. Classes that don’t require an explicit destructor, copy constructor and copy assignment are much easier to handle.</li>
+<li>Try to reduce the use of pointers, since for a class with raw pointer, more consideration should be paied for destructor &#x2F; copy ctor &#x2F; copy assignment &#x2F; move ctor and move assignment.</li>
+<li>If raw pointer is replaced with unique_ptr, we do not have to consider move ctor and move assignemnt, but we still have to pay attention to copy ctor and copy assignment</li>
+</ul>
+<h4 id="The-Rule-of-3"><a href="#The-Rule-of-3" class="headerlink" title="The Rule of 3"></a>The Rule of 3</h4><ul>
+<li>When you require a destructor, you most probably also require a copy constructor and copy assignment operator [e.g. class with unique_ptr instead of raw ptr]</li>
+<li>If you want to copy instead of move, follow the rule of 3.</li>
+</ul>
+<h4 id="The-Rule-of-5"><a href="#The-Rule-of-5" class="headerlink" title="The Rule of 5"></a>The Rule of 5</h4><ul>
+<li>When you require a destructor, you most probably also require the two copy operations and the two move operations [e.g. class with raw ptr]</li>
+<li>Since C++11, the rule of 5 may be more practical than the rule of 3, but in some situations, the rule of 3 still works</li>
+</ul>
+<h3 id="2-2-2-constructor"><a href="#2-2-2-constructor" class="headerlink" title="2.2.2 constructor"></a>2.2.2 constructor</h3><p>Condition for compiler to generate a default constructor<br><img src="https://raw.githubusercontent.com/Phi-C/ImageBed/master/uPic/qyqvbU.png" alt="qyqvbU"><br>Default constructor’s initialization behavior<br><img src="https://raw.githubusercontent.com/Phi-C/ImageBed/master/uPic/Y97Ymd.png" alt="Y97Ymd"><img src="https://raw.githubusercontent.com/Phi-C/ImageBed/master/uPic/an9hCo.png" alt="an9hCo"><br><img src="https://raw.githubusercontent.com/Phi-C/ImageBed/master/uPic/hmY9Hp.png" alt="hmY9Hp"><br><img src="https://raw.githubusercontent.com/Phi-C/ImageBed/master/uPic/9GYcMN.png" alt="9GYcMN"></p>
+<h3 id="2-2-3-destructor"><a href="#2-2-3-destructor" class="headerlink" title="2.2.3 destructor"></a>2.2.3 destructor</h3><p><img src="https://raw.githubusercontent.com/Phi-C/ImageBed/master/uPic/o2MdFh.png" alt="o2MdFh"></p>
+<h3 id="2-2-4-copy-ctor-and-copy-assignment"><a href="#2-2-4-copy-ctor-and-copy-assignment" class="headerlink" title="2.2.4 copy ctor and copy assignment"></a>2.2.4 copy ctor and copy assignment</h3><p>Conditions for compiler to generate default copy operations<br><img src="https://raw.githubusercontent.com/Phi-C/ImageBed/master/uPic/noidoL.png" alt="noidoL"></p>
+<ul>
+<li>as long as programmer did not declare these two copy operations explicitly, compiler would always generate the copy operations, just like default constructor and destructor. But there are more constraints for move operations.</li>
+<li>If no copy operation is explicitly declared (first condition satisfied), but second condition or third condition failed, compiler still generate default copy operations (as long as first condition is true). However, they are (implicity) deleted 【ps: &#x3D; delete means explicitly deted】</li>
+<li>Declaring a move operation(construction or assignment) in a class causes compilers to disable the copy operations(both), the rationale is that if member-wise move is not the proper way to move an object, there’s no reason to expect that member-wise copy is the proper way to copy it</li>
+<li>semantics of &#x3D; delete: They are defined (will appear in the overload sets for function calls), but just disabled.<br><img src="https://raw.githubusercontent.com/Phi-C/ImageBed/master/uPic/bGaDHJ.png" alt="bGaDHJ"><br><img src="https://raw.githubusercontent.com/Phi-C/ImageBed/master/uPic/8G2T6n.png" alt="8G2T6n"></li>
+</ul>
+<h3 id="2-2-5-move-ctor-and-move-assignment"><a href="#2-2-5-move-ctor-and-move-assignment" class="headerlink" title="2.2.5 move ctor and move assignment"></a>2.2.5 move ctor and move assignment</h3><p>Conditions for compiler to generate default move operations<br><img src="https://raw.githubusercontent.com/Phi-C/ImageBed/master/uPic/rkPTtF.png" alt="rkPTtF"></p>
+<ul>
+<li>If any of the 3 conditions failed, compiler will not generate the move operations</li>
+<li>interpretation of the third condition <ul>
+<li>If all bases&#x2F;data members can be move constructed&#x2F; assigned, compiler knows how to generate default move operations</li>
+<li>If some bases&#x2F;data members cannot be move constructed&#x2F; assigned, but it can be copy constructed&#x2F; assigned, compiler also knows how to generate move operations (can be binded to corresponding copy operations) [more intepretation: Types that aren’t “move-enabled”(i.e., that offer no special support for move operations) will be “moved” via their copy operations]</li>
+<li>If some bases&#x2F;data members can neither be move constructed&#x2F; assigned, nor be copy constructed&#x2F; assigned, compiler does not know how to generate the default operations.</li>
+</ul>
+</li>
+</ul>
+<h1 id="3-Reference"><a href="#3-Reference" class="headerlink" title="3 Reference"></a>3 Reference</h1><ol>
+<li>CPP CON Back to basics: The Special Member Functions</li>
+<li>CPP CON Back to basics: Designing Classes</li>
+<li>Effective modern C++ Item 17</li>
+</ol>
+
+    </div>
+     
+    <div class="post-footer__meta"><p>updated at 2023-11-11</p></div> 
+    <div class="post-entry__tags"><a href="/tags/CPP/" class="post-tags__link button"># CPP</a></div> 
+</article>
+
+
+    <div class="nav">
+        <div class="nav__prev">
+            
+                <a href="/2023/03/26/hello-world/" class="nav__link">
+                    <div>
+                        <svg viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" width="24" height="24"><path d="M589.088 790.624L310.464 512l278.624-278.624 45.248 45.248L400.96 512l233.376 233.376z" fill="#808080"></path></svg>
+                    </div>
+                    <div>
+                        <div class="nav__label">
+                            Previous Post
+                        </div>
+                        <div class="nav__title">
+                            Hello World
+                        </div>
+                    </div>
+                </a>
+            
+        </div>
+        <div class="nav__next">
+            
+        </div>
+    </div>
+
+
+
+    <div class="post__comments content-card" id="comment">
+        
+    <h4>Comments</h4>
+    
+    <div id="disqus_thread">Unable to load Disqus, please make sure your network can access.</div>
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+
+
+    </div>
+
+
+
+</main>
+
+            <footer class="footer">
+    
+    
+
+
+    
+    
+    
+        <span id="busuanzi_container_site_uv" hidden>
+            <span></span>
+            <span id="busuanzi_value_site_uv"></span>
+            <span>Viewers</span>
+            
+                <span>&amp;nbsp;&amp;nbsp;&amp;nbsp;|</span>
+            
+        </span>
+    
+    
+        <span id="busuanzi_container_site_pv" hidden>
+            <span></span>
+            <span id="busuanzi_value_site_pv"></span>
+            <span>Views</span>
+            
+        </span>
+    
+ 
+ 
+
+ 
+    
+        
+        <p class="footer-copyright">
+            Copyright © 2023 <a href="/">Welcome to Phi-C&#39;s Blog</a>
+        </p>
+    
+    
+    
+    <p>Powered by <a href="https://hexo.io" target="_blank">Hexo</a> | Theme - <a href="https://github.com/ChrAlpha/hexo-theme-cards" target="_blank">Cards</a></p>
+</footer>
+        </div>
+         
+
+ 
+
+ 
+
+ 
+
+ 
+
+
+
+ 
+
+
+
+ 
+
+
+    
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+
+    
+    <script>
+        function loadComment() {
+            window.disqus_config = function () {
+                this.page.url = 'https://phi-c.github.io/2022/12/17/OO-Design-Reference/';
+                this.page.identifier = '2022/12/17/OO-Design-Reference/';
+            };
+            (function(){
+                var dsq = document.createElement('script');
+                dsq.type = 'text/javascript';
+                dsq.async = true;
+                dsq.src = '//' + 'cxj' + '.disqus.com/embed.js';
+                (document.head || document.body).appendChild(dsq);
+            })();
+        }
+    
+        var runningOnBrowser = typeof window !== "undefined";
+        var isBot = runningOnBrowser && !("onscroll" in window) || typeof navigator !== "undefined" && /(gle|ing|ro|msn)bot|crawl|spider|yand|duckgo/i.test(navigator.userAgent);
+        var supportsIntersectionObserver = runningOnBrowser && "IntersectionObserver" in window;
+    
+        setTimeout(function () {
+            if (!isBot && supportsIntersectionObserver) {
+                var comment_observer = new IntersectionObserver(function(entries) {
+                    if (entries[0].isIntersecting) {
+                        loadComment();
+                        comment_observer.disconnect();
+                    }
+                }, { threshold: [0] });
+                comment_observer.observe(document.getElementById('comment'));
+            } else {
+                loadComment();
+            }
+        }, 1);
+    </script>
+
+
+    
+
+    
+    
+
+    
+    
+    
+    
+    
+
+    
+    
+    
+    
+    
+
+    
+    
+    
+
+
+
+    <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+</body>
+</html>
