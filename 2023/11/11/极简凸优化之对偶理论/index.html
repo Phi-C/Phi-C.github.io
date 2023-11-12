@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+    <meta charset="utf-8">
+
+    
+
+    <!-- 渲染优化 -->
+    <meta name="renderer" content="webkit">
+    <meta name="force-rendering" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta name="HandheldFriendly" content="True" >
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+    <!--icon-->
+
+    
+    
+    
+    
+    
+
+
+    <!-- meta -->
+
+
+<title>极简凸优化之对偶理论 | Welcome to Phi-C&#39;s Blog</title>
+
+
+    <meta name="keywords" content="数学">
+
+
+
+
+    <!-- OpenGraph -->
+ 
+    <meta name="description" content="1 基本概念标准形式的优化问题可以表达成:$$\begin{array}{ll}\operatorname{minimize} &amp; f_0(x) \\text { subject to } &amp; f_i(x) \leq 0, \quad i&#x3D;1, \ldots, m \&amp; h_i(x)&#x3D;0, \quad i&#x3D;1, \ldots, p \\end{">
+<meta property="og:type" content="article">
+<meta property="og:title" content="极简凸优化之对偶理论">
+<meta property="og:url" content="https://phi-c.github.io/2023/11/11/%E6%9E%81%E7%AE%80%E5%87%B8%E4%BC%98%E5%8C%96%E4%B9%8B%E5%AF%B9%E5%81%B6%E7%90%86%E8%AE%BA/index.html">
+<meta property="og:site_name" content="Welcome to Phi-C&#39;s Blog">
+<meta property="og:description" content="1 基本概念标准形式的优化问题可以表达成:$$\begin{array}{ll}\operatorname{minimize} &amp; f_0(x) \\text { subject to } &amp; f_i(x) \leq 0, \quad i&#x3D;1, \ldots, m \&amp; h_i(x)&#x3D;0, \quad i&#x3D;1, \ldots, p \\end{">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2023-11-11T14:26:28.000Z">
+<meta property="article:modified_time" content="2023-11-12T06:15:31.774Z">
+<meta property="article:tag" content="数学">
+<meta name="twitter:card" content="summary_large_image">
+
+
+    
+<link rel="stylesheet" href="/css/style/main.css">
+ 
+
+    
+    
+        <link rel="stylesheet" id="hl-default-theme" href="/css/highlight/default.css" media="none" onload="this.media='all'">
+        
+    
+
+    
+    
+
+    
+
+     
+    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+ 
+
+    <!-- custom head -->
+
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+    <body>
+        <div id="app" tabindex="-1">
+            <header class="header">
+    <div class="header__left">
+        <a href="/" class="button">
+            <span class="logo__text">XJ Chen&#39;s Blog</span>
+        </a>
+    </div>
+    <div class="header__right">
+        
+            <div class="navbar__menus">
+                
+                    <a href="/" class="navbar-menu button">首页</a>
+                
+                    <a href="/tags/" class="navbar-menu button">标签</a>
+                
+                    <a href="/archives/" class="navbar-menu button">归档</a>
+                
+                    <a href="/friends/" class="navbar-menu button">友链</a>
+                
+                    <a href="/page/" class="navbar-menu button">Page</a>
+                
+            </div>
+        
+        
+        
+
+        
+        
+
+        
+            <a class="dropdown-icon button" id="btn-dropdown" tabindex="0"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" width='24' height='24' fill="none" stroke="currentColor" stroke-width="0.7" stroke-linecap="round" stroke-linejoin="round"><path fill="currentColor" d="M3.314,4.8h13.372c0.41,0,0.743-0.333,0.743-0.743c0-0.41-0.333-0.743-0.743-0.743H3.314c-0.41,0-0.743,0.333-0.743,0.743C2.571,4.467,2.904,4.8,3.314,4.8z M16.686,15.2H3.314c-0.41,0-0.743,0.333-0.743,0.743s0.333,0.743,0.743,0.743h13.372c0.41,0,0.743-0.333,0.743-0.743S17.096,15.2,16.686,15.2z M16.686,9.257H3.314c-0.41,0-0.743,0.333-0.743,0.743s0.333,0.743,0.743,0.743h13.372c0.41,0,0.743-0.333,0.743-0.743S17.096,9.257,16.686,9.257z"></path></svg></a>
+            <div class="dropdown-menus" id="dropdown-menus">
+                
+                    <a href="/" class="dropdown-menu button">首页</a>
+                
+                    <a href="/tags/" class="dropdown-menu button">标签</a>
+                
+                    <a href="/archives/" class="dropdown-menu button">归档</a>
+                
+                    <a href="/friends/" class="dropdown-menu button">友链</a>
+                
+                    <a href="/page/" class="dropdown-menu button">Page</a>
+                
+            </div>
+        
+    </div>
+</header>
+
+
+            <main class="main">
+    
+
+<div class="post-title">
+    <h1 class="post-title__text">
+        极简凸优化之对偶理论
+    </h1>
+    <div class="post-title__meta">
+        <a href="/archives/2023/11/" class="post-meta__date button">2023-11-11</a>
+        
+ 
+        
+    
+     
+    <span id="busuanzi_container_page_pv" hidden>
+        <span class="separate-dot"></span>
+        <span></span>
+        <span id="busuanzi_value_page_pv"></span>
+        <span>Views</span>
+    </span>
+
+
+
+ 
+
+ 
+    </div>
+</div>
+
+
+
+<article class="post content-card">
+    <div class="post__header"></div>
+    <div class="post__content">
+        <h1 id="1-基本概念"><a href="#1-基本概念" class="headerlink" title="1 基本概念"></a>1 基本概念</h1><p>标准形式的优化问题可以表达成:<br>$$\begin{array}{ll}<br>\operatorname{minimize} &amp; f_0(x) \<br>\text { subject to } &amp; f_i(x) \leq 0, \quad i&#x3D;1, \ldots, m \<br>&amp; h_i(x)&#x3D;0, \quad i&#x3D;1, \ldots, p \<br>\end{array}$$<br>在接下来的讨论中，我们假设原优化问题的最优解为$p^{\star}$</p>
+<h2 id="1-1-拉格朗日函数"><a href="#1-1-拉格朗日函数" class="headerlink" title="1.1 拉格朗日函数"></a>1.1 拉格朗日函数</h2><p>$$L(x, \lambda, \nu)&#x3D;f_0(x)+\Sigma_{i&#x3D;1}^{m}\lambda_{i}f_{i}(x)+\Sigma_{i&#x3D;1}^{p}\nu_{i}h_{i}(x)$$<br>在原目标函数的基础上添加约束条件的加权和，得到增广目标函数。其中$\lambda_i$称为第$i$个不等式约束对应的Lagrange乘子，$\nu_{i}$称为第$i$个等式约束对应的Lagrange乘子。</p>
+<h2 id="1-2-拉格朗日对偶函数"><a href="#1-2-拉格朗日对偶函数" class="headerlink" title="1.2 拉格朗日对偶函数"></a>1.2 拉格朗日对偶函数</h2><p>$$g(\lambda, \nu)&#x3D;\inf <em>{x \in \mathcal{D}} L(x, \lambda, \nu)&#x3D;\inf <em>{x \in \mathcal{D}}\left(f_0(x)+\sum</em>{i&#x3D;1}^m \lambda_i f_i(x)+\sum</em>{i&#x3D;1}^p \nu_i h_i(x)\right)$$<br>对拉格朗日函数取下确界, 得到拉格朗日对偶函数, 它有以下性质：</p>
+<ul>
+<li>即使原问题为非凸的，对偶函数也是凸的</li>
+<li>对任意$\lambda \succeq 0$和$\nu$, $g(\lambda,\nu) \leq p^{\star}$</li>
+</ul>
+<h2 id="1-3-对偶问题"><a href="#1-3-对偶问题" class="headerlink" title="1.3 对偶问题"></a>1.3 对偶问题</h2><p>$$\begin{array}{ll}<br>\operatorname{minimize} &amp; g(\lambda, \nu) \<br>\text { subject to } &amp; \lambda \succeq 0<br>\end{array}$$<br>当原问题为非凸时, 考虑到拉格朗日对偶函数的特殊性质, 我们可以去求解它的对偶问题. 假设对偶问题的最优解为$d^{\star}$, 那么$d^{\star} \leq p^{\star}$恒成立。</p>
+<h2 id="1-4-对偶性"><a href="#1-4-对偶性" class="headerlink" title="1.4 对偶性"></a>1.4 对偶性</h2><ul>
+<li>弱对偶性: 满足$d^{\star} \leq p^{\star}$, 总是成立；</li>
+<li>强对偶性: 满足$d^{\star} &#x3D; p^{\star}$, 并非总是成立, 需要满足一定的约束准则. 如果原问题时凸优化问题, 强对偶性通常(但不总是)成立.</li>
+</ul>
+<h1 id="2-强对偶性和SCQ"><a href="#2-强对偶性和SCQ" class="headerlink" title="2 强对偶性和SCQ"></a>2 强对偶性和SCQ</h1><p>SCQ: Slater Constraint Qualification<br>当1）原问题是凸优化问题且2）SCQ满足的话，强对偶性成立。正式表述如下:<br>对于凸优化问题:<br>$$\begin{array}{ll}<br>\operatorname{minimize} &amp; f_0(x) \<br>\text { subject to } &amp; f_i(x) \leq 0, \quad i&#x3D;1, \ldots, m \<br>&amp; Ax&#x3D;b \<br>\end{array}$$<br>若<code>存在</code>可行解$x \in int \mathcal{D}$,使得<br>$$\begin{array}{ll}<br>Ax &#x3D; b,\quad f_{i}(x) \leq 0, \quad i&#x3D;1, \ldots, m<br>\end{array}$$<br>强对偶性成立。</p>
+<ul>
+<li>如果不等式约束中有一些事彷射函数, 那么对这些彷射函数不要求严格小于, 小于等于即可</li>
+</ul>
+
+    </div>
+     
+    <div class="post-footer__meta"><p>updated at 2023-11-12</p></div> 
+    <div class="post-entry__tags"><a href="/tags/%E6%95%B0%E5%AD%A6/" class="post-tags__link button"># 数学</a></div> 
+</article>
+
+
+    <div class="nav">
+        <div class="nav__prev">
+            
+        </div>
+        <div class="nav__next">
+            
+                <a href="/2023/10/31/VSCode%E8%B0%83%E8%AF%95%E5%AE%B9%E5%99%A8%E5%86%85%E7%9A%84Python%E4%BB%A3%E7%A0%81/" class="nav__link">
+                    <div>
+                        <div class="nav__label">
+                            Next Post
+                        </div>
+                        <div class="nav__title">
+                            VSCode调试容器内的Python代码
+                        </div>
+                    </div>
+                    <div>
+                        <svg viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" width="24" height="24"><path d="M434.944 790.624l-45.248-45.248L623.04 512l-233.376-233.376 45.248-45.248L713.568 512z" fill="#808080"></path></svg>
+                    </div>
+                </a>
+            
+        </div>
+    </div>
+
+
+
+    <div class="post__comments content-card" id="comment">
+        
+    <h4>Comments</h4>
+    
+    <div id="disqus_thread">Unable to load Disqus, please make sure your network can access.</div>
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+
+
+    </div>
+
+
+
+</main>
+
+            <footer class="footer">
+    
+    
+
+
+    
+    
+    
+        <span id="busuanzi_container_site_uv" hidden>
+            <span></span>
+            <span id="busuanzi_value_site_uv"></span>
+            <span>Viewers</span>
+            
+                <span>&amp;nbsp;&amp;nbsp;&amp;nbsp;|</span>
+            
+        </span>
+    
+    
+        <span id="busuanzi_container_site_pv" hidden>
+            <span></span>
+            <span id="busuanzi_value_site_pv"></span>
+            <span>Views</span>
+            
+        </span>
+    
+ 
+ 
+
+ 
+    
+        
+        <p class="footer-copyright">
+            Copyright © 2023 <a href="/">Welcome to Phi-C&#39;s Blog</a>
+        </p>
+    
+    
+    
+    <p>Powered by <a href="https://hexo.io" target="_blank">Hexo</a> | Theme - <a href="https://github.com/ChrAlpha/hexo-theme-cards" target="_blank">Cards</a></p>
+</footer>
+        </div>
+         
+
+ 
+
+ 
+
+ 
+
+ 
+
+
+
+ 
+
+
+
+ 
+
+
+    
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+
+    
+    <script>
+        function loadComment() {
+            window.disqus_config = function () {
+                this.page.url = 'https://phi-c.github.io/2023/11/11/%E6%9E%81%E7%AE%80%E5%87%B8%E4%BC%98%E5%8C%96%E4%B9%8B%E5%AF%B9%E5%81%B6%E7%90%86%E8%AE%BA/';
+                this.page.identifier = '2023/11/11/极简凸优化之对偶理论/';
+            };
+            (function(){
+                var dsq = document.createElement('script');
+                dsq.type = 'text/javascript';
+                dsq.async = true;
+                dsq.src = '//' + 'cxj' + '.disqus.com/embed.js';
+                (document.head || document.body).appendChild(dsq);
+            })();
+        }
+    
+        var runningOnBrowser = typeof window !== "undefined";
+        var isBot = runningOnBrowser && !("onscroll" in window) || typeof navigator !== "undefined" && /(gle|ing|ro|msn)bot|crawl|spider|yand|duckgo/i.test(navigator.userAgent);
+        var supportsIntersectionObserver = runningOnBrowser && "IntersectionObserver" in window;
+    
+        setTimeout(function () {
+            if (!isBot && supportsIntersectionObserver) {
+                var comment_observer = new IntersectionObserver(function(entries) {
+                    if (entries[0].isIntersecting) {
+                        loadComment();
+                        comment_observer.disconnect();
+                    }
+                }, { threshold: [0] });
+                comment_observer.observe(document.getElementById('comment'));
+            } else {
+                loadComment();
+            }
+        }, 1);
+    </script>
+
+
+    
+
+    
+    
+
+    
+    
+    
+    
+    
+
+    
+    
+    
+    
+    
+
+    
+    
+    
+
+
+
+    <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+</body>
+</html>
